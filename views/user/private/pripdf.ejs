@@ -1,0 +1,169 @@
+<h2>私有pdf列表<span style="font-size:14px;">(点击文件名可预览)</h2>
+
+<table id="demo" lay-filter="test"></table>
+
+<script>
+layui.use('table', function(){
+  var table = layui.table;
+  
+  //第一个实例
+  table.render({
+    id:'mytable',
+    elem: '#demo'
+    ,height: 550
+    ,even: true //开启隔行背景
+    ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+    ,url: '/csseinfo/user/pripdf_data' //数据接口
+    ,page: true //开启分页
+    ,cols: [[ //表头
+      {field: 'filename', title: '文件名',templet: '#filenameTpl',event:'preview',style:'cursor: pointer;'}
+      ,{field: 'filesize', title: '文件大小'}
+      ,{field: 'filetag', title: '标签'} 
+      ,{field: 'created_time', title: '上传时间', sort: true}
+      ,{title: '操作',align:'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+    ]]
+  })//render
+
+   //监听工具条
+      var tag = ''
+      table.on('tool(test)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        var data = obj.data //获得当前行数据
+        ,layEvent = obj.event; //获得 lay-event 对应的值
+        console.log(obj)
+        if(layEvent === 'addtag'){
+          layer.open({
+            title:'标签操作'
+            ,area: ['600px', '300px'],
+            content:'<input type="text" id="tagValue">',
+            success:function(layero,index){//层弹出后回调
+              console.log('弹出回调',layero,index)
+                  tag = new Tag("tagValue");
+                  tag.tagValue = data.filetag;
+                  tag.initView();
+              console.log(tag)
+            },
+            yes:function(index,layero){//确认按钮回调
+              console.log('确认后回调',layero,index)//do something
+              //$('#value').text($('#tagValue').val());  
+              let filetagstr = $('#tagValue').val()
+              $.ajax({
+                method:'POST',
+                url:'/csseinfo/user/addtags',
+                data:{
+                  _id:data._id,
+                  tags:$('#tagValue').val()
+                },
+                success:function(result){
+                  console.log(result)
+                  layer.msg('修改成功')
+                  //同步更新表格和缓存对应的值
+                  console.log('obj.update',filetagstr,$('#tagValue').val())
+                  layer.close(index); //如果设定了yes回调，需进行手工关闭
+                  obj.update({
+                    filetag: filetagstr
+                  });
+                },
+                error:function(error){
+                  console.log('error',error)
+                }
+              })       
+            }
+          })          
+        }//addtag
+        else if(layEvent === 'preview'){
+          console.log('预览')
+          let ahref = encodeURI("<%=user.cn%><%=user.alias%>") 
+          layer.open({
+            type: 2,
+            title: '预览',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['1024px', '100%'],
+            content: 'http://qiandao.szu.edu.cn:81/csseinfo/myfile/ViewerJS/#../<%=user.cn%><%=user.alias%>/'+data.filename //iframe的url
+          }); 
+        }
+        else if(layEvent === 'download'){
+          console.log('下载',data.downloadlink)
+          var link = document.createElement('a')
+              link.setAttribute("download", "");
+              link.href = data.downloadlink;
+              link.click();
+          //window.open(data.downloadlink)
+        }
+        else if(layEvent === 'adddes'){
+          layer.msg('adddes');
+        }
+        else if(layEvent === 'pritopub'){
+          //墨绿深蓝风
+          layer.alert('转为公开，搜索时可见', {
+            skin: 'layui-layer-molv' //样式类名
+          }, function(){
+            console.log('确认转为私有',data._id)
+            $.ajax({
+              method:'POST',
+              url:'/csseinfo/user/pritopub',
+              data:{
+                _id:data._id
+              },
+              success:function(result){
+                console.log('result',result)
+                layer.msg('设置成功')
+                //执行重载
+                table.reload('mytable', {
+                  page: {          
+                  }
+                  ,where: {                
+                  }
+                });
+              },
+              error:function(error){
+                console.log('error',error)
+              }
+            })//ajax
+          });
+        }//转私有
+        else if(layEvent === 'del'){
+          layer.confirm('确定删除该文档吗？', function(index){
+            obj.del(); //删除对应行（tr）的DOM结构
+            layer.close(index);
+            //向服务端发送删除指令
+            $.ajax({
+              method:'POST',
+              url:'/csseinfo/user/delwendang',
+              data:{
+                _id:data._id
+              },
+              success:function(result){
+                console.log('result',result)
+                layer.msg('删除成功')
+                //执行重载
+                table.reload('mytable', {
+                  page: {          
+                  }
+                  ,where: {                
+                  }
+                });
+              },
+              error:function(error){
+                layer.msg('删除失败')
+                console.log('error',error)
+              }
+            })//ajax
+          });
+        }//delete 
+      });//table 操作
+  
+});
+</script>
+
+<script type="text/html" id="barDemo">
+  <a class="layui-btn layui-btn-xs" lay-event="download">下载</a>
+  <a class="layui-btn layui-btn-xs" lay-event="addtag">标签操作</a>
+  <a class="layui-btn layui-btn-xs" lay-event="pritopub">转公开</a>
+  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+  
+  <!-- 这里同样支持 laytpl 语法，如： -->
+  {{#  if(d.auth > 2){ }}
+    <a class="layui-btn layui-btn-xs" lay-event="check">审核</a>
+  {{#  } }}
+</script>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title><%=title%></title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/csseinfo/stylesheets/style.css" rel="stylesheet">
+    <link href="/csseinfo/stylesheets/bootstrap-treeview.css" rel="stylesheet">
+    <link href="/csseinfo/stylesheets/font-awesome.min.css" rel="stylesheet">
+    <link href="/csseinfo/stylesheets/dropzone.css" rel="stylesheet">
+    <link href="/csseinfo/stylesheets/basic.css" rel="stylesheet">
+    <link href="/csseinfo/stylesheets/layui.css" rel="stylesheet">
+    <link href="/csseinfo/stylesheets/lightbox.css" rel="stylesheet">
+    <link href="/csseinfo/stylesheets/tag.css" rel="stylesheet">
+    <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+    <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+      .layui-body{overflow-y: scroll;}
+      .dropzone .dz-preview .dz-error-message{
+        color: white!important;
+        width: auto;
+      }
+    </style>
+  </head>
+  <body>
+  	<!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">CSSE DOCS</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/csseinfo/public">首页</a></li>
+            <li class="active"><a href="">我的文档</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><%=user.user.cn%> <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">退出</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container-fluid theme-showcase" role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <h1>CSSE DOCS</h1>
+        <p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting point to create something more unique by building on or modifying it.</p>
+      </div>
+
+      <div class="row-fluid ">
+        <div class="col-md-2">
+          <div id="tree">
+          </div>
+        </div>
+
+        <div class="col-md-10" id="maincontent">
+          <h2>Main Content Section</h2>
+        </div>
+      </div>
+
+    </div> <!-- /container -->
+
+    <footer class="footer">
+      <div class="container-fluid ">
+        <p class="text-muted">2018 © CSSE</p>
+      </div>
+    </footer>
+
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/csseinfo/javascripts/bootstrap-treeview.js"></script>
+    <script type="text/javascript" src="/csseinfo/javascripts/layer.js"></script>
+    <script type="text/javascript" src="/csseinfo/javascripts/layui.all.js"></script>
+    <script type="text/javascript" src="/csseinfo/javascripts/dropzone.js"></script>l
+    <script type="text/javascript" src="/csseinfo/javascripts/lightbox-2.6.min.js"></script>
+    <script type="text/javascript" src="/csseinfo/javascripts/tag.js"></script>
+    <script type="text/javascript">
+        function onKeyDown(event){
+            var e = event || window.event || arguments.callee.caller.arguments[0];
+            if(e && e.keyCode==27){ // 按 Esc 
+                    //要做的事情
+            }
+            if(e && e.keyCode==113){ // 按 F2 
+                     //要做的事情
+            }            
+            if(e && e.keyCode==13){ // enter 键
+                alert("此处回车触发搜索事件");
+            }
+        }
+        var layerLoading;
+        $(function() {
+            $('#tree').treeview({
+                //enableLinks:true,
+                data: getTree(),//节点数据
+                onNodeSelected:function(event,data){//节点被选中
+                  console.log('event--->',event)
+                  console.log('data--->',data)
+                  layerLoading = layer.load(1, {
+                      shade: [0.1,'#fff'] //0.1透明度的白色背景
+                  });
+                  $('#maincontent').load(data.href,function(result){
+                    layer.close(layerLoading);
+                    let $result = $(result)
+                    $result.find("script").appendTo('#maincontent')                   
+                  })
+                },
+                onNodeUnselected:function(event,data){
+                  console.log('event--->',event)
+                  console.log('data--->',data)
+                }
+            });
+        })
+
+        function getTree() {
+            //节点上的数据遵循如下的格式：
+            var tree = [{
+                text: "公开", //节点显示的文本值  string
+                icon:'icon-unlock',
+                //icon: "glyphicon glyphicon-play-circle", //节点上显示的图标，支持bootstrap的图标  string
+                //selectedIcon: "glyphicon glyphicon-ok", //节点被选中时显示的图标       string
+                //color: "#ff0000", //节点的前景色      string
+                //backColor: "#1606ec", //节点的背景色      string
+                //href: "#http://www.baidu.com", //节点上的超链接
+                selectable: false, //标记节点是否可以选择。false表示节点应该作为扩展标题，不会触发选择事件。  string
+                state: { //描述节点的初始状态    Object
+                    checked: false, //是否选中节点
+                    /*disabled: true,*/ //是否禁用节点
+                    expanded: false, //是否展开节点
+                    //selected: true //是否选中节点
+                },
+                nodes: [
+                {
+                  text: "PDF",
+                  href: "/csseinfo/user/pubpdf"
+                },
+                {
+                  text: "PPT",
+                  href: "/csseinfo/user/pubppt"
+                }, {
+                  text: "Word",
+                  href: "/csseinfo/user/pubword"
+                }, {
+                  text: "Excel",
+                  href: "/csseinfo/user/pubexcel"
+                }, {
+                  text: "Txt",
+                  href: "/csseinfo/user/pubtxt"
+                }
+                , {
+                    text: "图片",
+                    icon:'icon-picture',
+                    href: "/csseinfo/user/pubimg"
+                }]
+            }, {
+                text: "非公开",
+                icon:'icon-lock',
+                selectable: false, //标记节点是否可以选择。false表示节点应该作为扩展标题，不会触发选择事件。  string
+                state: { //描述节点的初始状态    Object
+                    checked: false, //是否选中节点
+                    /*disabled: true,*/ //是否禁用节点
+                    expanded: false, //是否展开节点
+                    //selected: true //是否选中节点
+                },
+                nodes: [
+                {
+                        text: "PDF",
+                        href: "/csseinfo/user/pripdf"
+                    },
+                {
+                        text: "PPT",
+                        href: "/csseinfo/user/prippt"
+                    }, {
+                        text: "Word",
+                        href: "/csseinfo/user/priword"
+                    }, {
+                        text: "Excel",
+                        href: "/csseinfo/user/priexcel"
+                    }, {
+                        text: "Txt",
+                        href: "/csseinfo/user/pritxt"
+                    }
+                , {
+                    text: "图片",
+                    icon:'icon-picture',
+                    href: "/csseinfo/user/priimg"
+                }]
+            },{
+              text:'上传',
+              icon:'icon-cloud-upload',
+              selectable:true,
+              href:'/csseinfo/user/upload'
+            }];
+
+            return tree;
+        }
+        $('#tree').on('nodeSelected',function(event,data){
+          
+        })
+
+        </script> 
+
+  </body>
+</html>
