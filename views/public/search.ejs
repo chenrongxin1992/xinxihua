@@ -1,0 +1,159 @@
+
+ 
+<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+  <ul class="layui-tab-title">
+    <%if(type==0){%>
+      <li class="layui-this">Word</li>
+      <li>PPT</li>
+      <li>PDF</li>
+      <li>EXCEL</li>
+      <li>TXT</li>
+      <li>图片</li>
+    <%}%>
+    <%if(type==1){%>
+      <li>Word</li>
+      <li class="layui-this">PPT</li>
+      <li>PDF</li>
+      <li>EXCEL</li>
+      <li>TXT</li>
+      <li>图片</li>
+    <%}%>
+    <%if(type==2){%>
+      <li>Word</li>
+      <li >PPT</li>
+      <li class="layui-this">PDF</li>
+      <li>EXCEL</li>
+      <li>TXT</li>
+      <li>图片</li>
+    <%}%>
+    <%if(type==3){%>
+      <li>Word</li>
+      <li >PPT</li>
+      <li >PDF</li>
+      <li class="layui-this">EXCEL</li>
+      <li>TXT</li>
+      <li>图片</li>
+    <%}%>
+    <%if(type==4){%>
+      <li>Word</li>
+      <li >PPT</li>
+      <li >PDF</li>
+      <li >EXCEL</li>
+      <li class="layui-this">TXT</li>
+      <li>图片</li>
+    <%}%>
+    <%if(type==5){%>
+      <li>Word</li>
+      <li >PPT</li>
+      <li >PDF</li>
+      <li >EXCEL</li>
+      <li >TXT</li>
+      <li class="layui-this">图片</li>
+    <%}%>
+  </ul>
+  <div class="layui-tab-content" style="height: 100px;">
+    <%if(type==0){%>
+      <div class="layui-tab-item layui-show">
+      <%docs.forEach(function(item,index,docs){%>
+        <div class="res_item">
+          <h3 class="res_h3"><%=item.filename%></h3>
+          <div class="res_content">
+            <div class="res_des">标签：<%=item.filetag%>，上传者：<%=item.cn%>，上传时间：<%=item.created_time%></div>
+            <div class="res_op">这里放操作，如下载，预览</div>
+          </div>
+        </div>
+        <%})%>
+      </div>
+    <%}%>
+    <%if(type==1){%>
+      <div class="layui-tab-item layui-show">
+      <%docs.forEach(function(item,index,docs){%>
+        <div class="res_item">
+          <h3 class="res_h3"><%=item.filename%></h3>
+          <div class="res_content">
+            <div class="res_des">标签：<%=item.filetag%>，上传者：<%=item.cn%>，上传时间：<%=item.created_time%></div>
+            <div class="res_op">这里放操作，如下载，预览</div>
+          </div>
+        </div>
+        <%})%>
+      </div>
+    <%}%>
+    <%if(type==2){%>
+      <div class="layui-tab-item layui-show">
+      <%docs.forEach(function(item,index,docs){%>
+        <div class="res_item">
+          <h3 class="res_h3"><%=item.filename%></h3>
+          <div class="res_content">
+            <div class="res_des">标签：<%=item.filetag%>，上传者：<%=item.cn%>，上传时间：<%=item.created_time%></div>
+            <div class="res_op">这里放操作，如下载，预览</div>
+          </div>
+        </div>
+        <%})%>
+      </div>
+    <%}%>
+    <%if(type==3){%>
+      <div class="layui-tab-item layui-show">
+      <%docs.forEach(function(item,index,docs){%>
+        <div class="res_item">
+          <h3 class="res_h3"><%=item.filename%></h3>
+          <div class="res_content">
+            <div class="res_des">标签：<%=item.filetag%>，上传者：<%=item.cn%>，上传时间：<%=item.created_time%></div>
+            <div class="res_op">这里放操作，如下载，预览</div>
+          </div>
+        </div>
+        <%})%>
+      </div>
+    <%}%>
+    <%if(type==4){%>
+      <div class="layui-tab-item layui-show">
+      <%docs.forEach(function(item,index,docs){%>
+        <div class="res_item">
+          <h3 class="res_h3"><%=item.filename%></h3>
+          <div class="res_content">
+            <div class="res_des">标签：<%=item.filetag%>，上传者：<%=item.cn%>，上传时间：<%=item.created_time%></div>
+            <div class="res_op">这里放操作，如下载，预览</div>
+          </div>
+        </div>
+        <%})%>
+      </div>
+    <%}%>
+    <%if(type==5){%>
+      <div class="layui-tab-item layui-show">
+      <%docs.forEach(function(item,index,docs){%>
+        <div class="res_item">
+          <h3 class="res_h3"><%=item.filename%></h3>
+          <div class="res_content">
+            <div class="res_des">标签：<%=item.filetag%>，上传者：<%=item.cn%>，上传时间：<%=item.created_time%></div>
+            <div class="res_op">这里放操作，如下载，预览</div>
+          </div>
+        </div>
+        <%})%>
+      </div>
+    <%}%>
+
+      <div id="demo3"></div>
+  </div>
+</div> 
+
+<script>
+$(function(){
+  layui.use(['element','flow','laypage'], function(){
+    var element = layui.element,
+        flow = layui.flow,
+        laypage = layui.laypage
+    //一些事件监听
+    element.on('tab(docDemoTabBrief)', function(data){
+      let searchtxt = $('#searchtxt').val()
+      console.log(searchtxt);
+      console.log(data.index);//从0开始
+      $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt+'&type='+data.index,function(result){
+        let $result = $(result)
+            $result.find("script").appendTo('#search_content') 
+      })//load
+    });//tab
+
+    //分页
+  })//layui use
+})
+
+</script>

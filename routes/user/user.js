@@ -937,10 +937,12 @@ router.get('/pubpdf',function(req,res){
 }).get('/pubpdf_data',function(req,res){
 	console.log('in pubpdf_data router')
 	let page = req.query.page,
-		limit = req.query.limit
+		limit = req.query.limit,
+		keyword = req.query.keyword
 	page ? page : 1;//当前页
 	limit ? limit : 15;//每页数据
-	console.log(page,limit)
+	keyword ? keyword : ''
+	console.log(page,limit,keyword)
 	async.waterfall([
 		function(cb){
 			let search = Save.find({}).count()
@@ -954,24 +956,71 @@ router.get('/pubpdf',function(req,res){
 				})
 		},
 		function(total,cb){
-			let numSkip = (page-1)*limit
-			limit = parseInt(limit)
-			console.log('check -- >',limit,page,numSkip)
-			let search = Save.find({'filetype':{'$in':['pdf']}})
-				search.where('ispublic').equals(1)
-				search.where('isdelete').equals(0)
-				search.limit(limit)
-				search.skip(numSkip)
-				search.exec(function(err,docs){
-					if(err){
-						console.log('search err-->',err.stack)
-						cb(err)
-					}
-					console.log('check docs-->',docs)
-					cb(null,docs)
-				})
+			if(keyword){
+				console.log('有搜索参数')
+				let qs_keyword = new RegExp(keyword,'i')
+				console.log('qs_keyword-->',qs_keyword)
+				let numSkip = (page-1)*limit
+					limit = parseInt(limit)
+					console.log('check -- >',limit,page,numSkip)
+					let search = Save.find({
+							$or : [
+								{filename:{$regex:qs_keyword}},
+								{filetag:{$regex:qs_keyword}},
+								{cn:{$regex:qs_keyword}}
+							]
+						})
+						search.where('filetype').in(['pdf'])
+						search.where('ispublic').equals(1)
+						search.where('isdelete').equals(0)
+						search.limit(limit)
+						search.skip(numSkip)
+						search.exec(function(err,docs){
+							if(err){
+								console.log('search err-->',err.stack)
+								cb(err)
+							}
+							console.log('check docs-->',docs.length)
+							//增加一步获取数量
+							let search1 = Save.find({
+									$or : [
+										{filename:{$regex:qs_keyword}},
+										{filetag:{$regex:qs_keyword}}
+									]
+								})
+								search1
+								search1.where('ispublic').equals(1)
+								search1.where('isdelete').equals(0)
+								search1.count()
+								search1.exec(function(e,d){
+									if(e){
+										console.log('获取数量出错-->',e)
+										cb(e)
+									}
+									console.log('有参数查询，数量-->',d)
+									cb(null,docs,d)
+								})
+						})
+			}else{
+				let numSkip = (page-1)*limit
+					limit = parseInt(limit)
+					console.log('check -- >',limit,page,numSkip)
+					let search = Save.find({'filetype':{'$in':['pdf']}})
+						search.where('ispublic').equals(1)
+						search.where('isdelete').equals(0)
+						search.limit(limit)
+						search.skip(numSkip)
+						search.exec(function(err,docs){
+							if(err){
+								console.log('search err-->',err.stack)
+								cb(err)
+							}
+							console.log('check docs-->',docs)
+							cb(null,docs,total)
+						})
+			}
 		},
-		function(docs,cb){
+		function(docs,total,cb){
 			//重新封装数据
 			//重新封装数据
 			let data = []//最终数据
@@ -988,7 +1037,7 @@ router.get('/pubpdf',function(req,res){
 					data.push(tempdata)
 					delete tempdata
 				})
-				//data.count = total
+				data.count = total
 				console.log('返回数据-->',data)
 				cb(null,data)
 		}

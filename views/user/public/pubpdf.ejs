@@ -1,10 +1,22 @@
 <h2>pdf列表<span style="font-size:14px;">(点击文件名可预览)</span></h2>
+<form class="layui-form" action="">
+    <div class="layui-form-item my-form-item">
+      <div class="layui-inline">
+        <label class="layui-form-label" style="width:98px;">关键字</label>
+        <div class="layui-input-inline">
+          <input class="layui-input" name="keyword" id="keyword" autocomplete="off" placeholder="请输入关键字">
+        </div>
+        <button class="layui-btn" lay-submit="" lay-filter="search">搜索</button>
+      </div>
+    </div>  
+</form>
 
 <table id="demo" lay-filter="test"></table>
 
 <script>
-layui.use('table', function(){
-  var table = layui.table;
+layui.use(['table','form'], function(){
+  var table = layui.table,
+      form = layui.form
   
   //第一个实例
   table.render({
@@ -152,7 +164,19 @@ layui.use('table', function(){
           });
         }//delete 
       });//table 操作
-  
+
+  //监听form
+  //搜索
+    form.on('submit(search)', function(data){
+      console.log('data-->',data)
+      table.reload('mytable', {
+        page:1,
+        where: {
+            keyword: $('#keyword').val()
+        }
+      });
+      return false;
+    })//form
 });
 </script>
 

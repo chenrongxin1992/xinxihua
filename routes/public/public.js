@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 
 const request = require('request')
+const Save = require('../../db/save')
+const async = require('async')
 
 
 //redis
@@ -140,5 +142,57 @@ router.get('/', function(req, res, next) {
 	}
 	//res.render('public/index', { title: 'Express' });
 });
+
+router.get('/searchtxt',function(req,res){
+	let searchtxt = req.query.searchtxt,
+		filetype = req.query.type,
+		type = 0
+	if(!filetype || filetype==0){
+		filetype = ['doc','docx']
+	}else if(filetype==1){
+		filetype = ['ppt','pptx']
+		type = 1
+	}else if(filetype==2){
+		filetype = ['pdf']
+		type = 2
+	}else if(filetype==3){
+		filetype = ['xls','xlsx']
+		type = 3
+	}else if(filetype==4){
+		filetype = ['txt']
+		type = 4
+	}else{
+		filetype = ['jpg','png','jpeg','PNG','gif']
+		type = 5
+	}
+	console.log('type--->',type)
+	console.log('filetype--->',filetype)
+	console.log('searchtxt--->',searchtxt)
+	let reg = new RegExp(searchtxt,'i')//不区分大小写
+	let search = Save.find({//多条件模糊查询
+			$or : [
+				{filename:{$regex:reg}},
+				{filetag:{$regex:reg}},
+				{cn:{$regex:reg}}
+			]
+		}
+	)//search
+	search.where('filetype').in(filetype)
+	search.sort({'created_time':-1})
+	search.limit(100)
+	search.exec(function(err,docs){
+		if(err){
+			console.log('search err--->',err)
+			return res.json({'code':-1,'msg':err})
+		}
+		if(!docs){
+			console.log('kong--->',kong)
+		}
+		if(docs){
+			console.log('docs--->',docs)
+			return res.render('public/search',{'docs':docs,'type':type})//0.word,1.ppt,2.pdf,3.execl,4.txt,5.img
+		}
+	})
+})
 
 module.exports = router;

@@ -9,7 +9,9 @@
 
     <!-- Bootstrap -->
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/csseinfo/stylesheets/layui.css" rel="stylesheet">
     <link href="/csseinfo/stylesheets/style.css" rel="stylesheet">
+    <link href="/csseinfo/stylesheets/app.min.css" rel="stylesheet">
 
     <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
     <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
@@ -57,13 +59,20 @@
       <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-12 col-xs-12">
       	<form class="">
             <div class="input-group">
-                <input type="text" class="form-control" onkeydown="onKeyDown(event)"/>
-                <span class="input-group-addon btn btn-success"><i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;搜索</span>
+                <input id="searchtxt" type="text" class="form-control" onkeydown="onKeyDown(event)"/>
+                <span id="searchspan" class="input-group-addon btn btn-success"><i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;搜索</span>
             </div> 
         </form>
       </div>
-
     </div> <!-- /container -->
+
+      <div class="container search_result">
+        <div class="row">
+          <div class="col-12">
+            <div id="search_content"></div>
+          </div>
+        </div>
+      </div>
 
     <footer class="footer">
       <div class="container">
@@ -75,6 +84,9 @@
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/csseinfo/javascripts/app.min.js"></script>
+    <script src="/csseinfo/javascripts/layui.all.js"></script>
+    <script src="/csseinfo/javascripts/bootstrap-paginator.min.js"></script>
     <script type="text/javascript">
         function onKeyDown(event){
             var e = event || window.event || arguments.callee.caller.arguments[0];
@@ -88,6 +100,38 @@
                 alert("此处回车触发搜索事件");
             }
         }
+        $(function(){
+          $('#searchspan').on('click',function(event){
+            let searchtxt = $('#searchtxt').val()
+            console.log('check searchtxt---->',searchtxt)
+            if(!searchtxt){
+              return false
+            }else{
+                $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt,function(result){
+                  let $result = $(result)
+                      $result.find("script").appendTo('#search_content') 
+                })//load
+            }
+            
+            // $.ajax({
+            //   method:'POST',
+            //   url:'/csseinfo/public/searchtxt',
+            //   data:{
+            //     searchtxt:searchtxt
+            //   },
+            //   success:function(result){
+            //     console.log('result--->',result)
+            //     let $result = $(result)
+            //         $result.appendTo('#search_content')  
+            //   },
+            //   error:function(error){
+            //     console.log('error---->',error)
+            //   }
+            // })//ajax
+          })//click
+          //layui
+          
+        })//exect
         </script> 
   </body>
 </html>

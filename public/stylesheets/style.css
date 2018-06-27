@@ -24,4 +24,48 @@ body {
   
   color:blue;
 }
-
+.my-form-item{
+  margin-top: 20px;
+  margin-bottom: :0px!important;
+}
+.search_result{
+  min-height: 500px;
+  margin: 20px auto;
+}
+#search_content{
+  padding: 15px 15px;
+}
+.res_item{
+  margin-top: 0;
+  margin-bottom: 26px;
+  line-height: 1.2;
+  text-align: left;
+  font-size: small;
+  font-family: arial,sans-serif;
+}
+.res_h3{
+  padding:0;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: normal;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.res_content{
+  line-height: 1.54;
+  color: #545454;
+  max-width: 48em;
+}
+.res_des{
+  height: 18px;
+  line-height: 16px;
+  color: #808080;
+}
+.res_op{
+  line-height: 1.4;
+  word-wrap: break-word;
+}
