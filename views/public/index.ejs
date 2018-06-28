@@ -9,9 +9,11 @@
 
     <!-- Bootstrap -->
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/csseinfo/stylesheets/font-awesome.min.css" rel="stylesheet">
     <link href="/csseinfo/stylesheets/layui.css" rel="stylesheet">
     <link href="/csseinfo/stylesheets/style.css" rel="stylesheet">
     <link href="/csseinfo/stylesheets/app.min.css" rel="stylesheet">
+    <link href="/csseinfo/stylesheets/lightbox.css" rel="stylesheet">
 
     <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
     <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
@@ -60,19 +62,21 @@
       	<form class="">
             <div class="input-group">
                 <input id="searchtxt" type="text" class="form-control" onkeydown="onKeyDown(event)"/>
-                <span id="searchspan" class="input-group-addon btn btn-success"><i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;搜索</span>
+                <span id="searchspan" class="input-group-addon btn "><i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;搜索</span>
             </div> 
         </form>
       </div>
     </div> <!-- /container -->
 
       <div class="container search_result">
-        <div class="row">
+        <div class="row ">
           <div class="col-12">
             <div id="search_content"></div>
           </div>
         </div>
+        <div style="clear:both;"></div>
       </div>
+
 
     <footer class="footer">
       <div class="container">
@@ -86,6 +90,7 @@
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="/csseinfo/javascripts/app.min.js"></script>
     <script src="/csseinfo/javascripts/layui.all.js"></script>
+    <script type="text/javascript" src="/csseinfo/javascripts/lightbox-2.6.min.js"></script>
     <script src="/csseinfo/javascripts/bootstrap-paginator.min.js"></script>
     <script type="text/javascript">
         function onKeyDown(event){
@@ -133,5 +138,7 @@
           
         })//exect
         </script> 
+        <div id="Layer1" style="display:none;position:absolute;z-index:1;"></div>
+        <!-- 鼠标上移显示图片 -->
   </body>
 </html>

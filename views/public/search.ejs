@@ -4,132 +4,60 @@
   <ul class="layui-tab-title">
     <%if(type==0){%>
       <li class="layui-this">Word</li>
-      <li>PPT</li>
-      <li>PDF</li>
-      <li>EXCEL</li>
-      <li>TXT</li>
-      <li>图片</li>
+    <%}else{%>
+      <li>Word</li>
     <%}%>
     <%if(type==1){%>
-      <li>Word</li>
       <li class="layui-this">PPT</li>
-      <li>PDF</li>
-      <li>EXCEL</li>
-      <li>TXT</li>
-      <li>图片</li>
+    <%}else{%>
+      <li>PPT</li>
     <%}%>
     <%if(type==2){%>
-      <li>Word</li>
-      <li >PPT</li>
       <li class="layui-this">PDF</li>
-      <li>EXCEL</li>
-      <li>TXT</li>
-      <li>图片</li>
+    <%}else{%>
+      <li>PDF</li>
     <%}%>
     <%if(type==3){%>
-      <li>Word</li>
-      <li >PPT</li>
-      <li >PDF</li>
       <li class="layui-this">EXCEL</li>
-      <li>TXT</li>
-      <li>图片</li>
+    <%}else{%>
+      <li>EXCEL</li>
     <%}%>
     <%if(type==4){%>
-      <li>Word</li>
-      <li >PPT</li>
-      <li >PDF</li>
-      <li >EXCEL</li>
       <li class="layui-this">TXT</li>
-      <li>图片</li>
+    <%}else{%>
+      <li>TXT</li>
     <%}%>
     <%if(type==5){%>
-      <li>Word</li>
-      <li >PPT</li>
-      <li >PDF</li>
-      <li >EXCEL</li>
-      <li >TXT</li>
       <li class="layui-this">图片</li>
+    <%}else{%>
+      <li>图片</li>
     <%}%>
+
   </ul>
   <div class="layui-tab-content" style="height: 100px;">
-    <%if(type==0){%>
       <div class="layui-tab-item layui-show">
       <%docs.forEach(function(item,index,docs){%>
         <div class="res_item">
-          <h3 class="res_h3"><%=item.filename%></h3>
+          <h3 class="res_h3">
+            <%if(type!=5){%>
+              <a class="res_h3_a" type="<%=type%>"><%=item.filename%></a>
+            <%}else{%>
+              <a class="res_h3_a1" href="/csseinfo/publicfile/<%=user.cn%><%=user.alias%>/<%=item.filename%>" data-lightbox="<%=item.filename%>" title="<%=item.filename%>"><%=item.filename%></a>
+            <%}%>
+          </h3>
           <div class="res_content">
-            <div class="res_des">标签：<%=item.filetag%>，上传者：<%=item.cn%>，上传时间：<%=item.created_time%></div>
-            <div class="res_op">这里放操作，如下载，预览</div>
+            <div class="res_des">
+              标签：<%if(item.filetag.length){%><span id="res_tag"><%=item.filetag%>,</span><%}else{%>暂无，<%}%>
+              上传者：<span class="res_cn"><%=item.cn%>，</span>
+              上传时间：<%=item.created_time%>
+            </div>
+            <div class="res_op">
+              <a id="res_a" href="<%=item.downloadLink%>" download><i class="icon-download-alt"></i>下载</a>
+            </div>
           </div>
         </div>
         <%})%>
       </div>
-    <%}%>
-    <%if(type==1){%>
-      <div class="layui-tab-item layui-show">
-      <%docs.forEach(function(item,index,docs){%>
-        <div class="res_item">
-          <h3 class="res_h3"><%=item.filename%></h3>
-          <div class="res_content">
-            <div class="res_des">标签：<%=item.filetag%>，上传者：<%=item.cn%>，上传时间：<%=item.created_time%></div>
-            <div class="res_op">这里放操作，如下载，预览</div>
-          </div>
-        </div>
-        <%})%>
-      </div>
-    <%}%>
-    <%if(type==2){%>
-      <div class="layui-tab-item layui-show">
-      <%docs.forEach(function(item,index,docs){%>
-        <div class="res_item">
-          <h3 class="res_h3"><%=item.filename%></h3>
-          <div class="res_content">
-            <div class="res_des">标签：<%=item.filetag%>，上传者：<%=item.cn%>，上传时间：<%=item.created_time%></div>
-            <div class="res_op">这里放操作，如下载，预览</div>
-          </div>
-        </div>
-        <%})%>
-      </div>
-    <%}%>
-    <%if(type==3){%>
-      <div class="layui-tab-item layui-show">
-      <%docs.forEach(function(item,index,docs){%>
-        <div class="res_item">
-          <h3 class="res_h3"><%=item.filename%></h3>
-          <div class="res_content">
-            <div class="res_des">标签：<%=item.filetag%>，上传者：<%=item.cn%>，上传时间：<%=item.created_time%></div>
-            <div class="res_op">这里放操作，如下载，预览</div>
-          </div>
-        </div>
-        <%})%>
-      </div>
-    <%}%>
-    <%if(type==4){%>
-      <div class="layui-tab-item layui-show">
-      <%docs.forEach(function(item,index,docs){%>
-        <div class="res_item">
-          <h3 class="res_h3"><%=item.filename%></h3>
-          <div class="res_content">
-            <div class="res_des">标签：<%=item.filetag%>，上传者：<%=item.cn%>，上传时间：<%=item.created_time%></div>
-            <div class="res_op">这里放操作，如下载，预览</div>
-          </div>
-        </div>
-        <%})%>
-      </div>
-    <%}%>
-    <%if(type==5){%>
-      <div class="layui-tab-item layui-show">
-      <%docs.forEach(function(item,index,docs){%>
-        <div class="res_item">
-          <h3 class="res_h3"><%=item.filename%></h3>
-          <div class="res_content">
-            <div class="res_des">标签：<%=item.filetag%>，上传者：<%=item.cn%>，上传时间：<%=item.created_time%></div>
-            <div class="res_op">这里放操作，如下载，预览</div>
-          </div>
-        </div>
-        <%})%>
-      </div>
-    <%}%>
 
       <div id="demo3"></div>
   </div>
@@ -137,23 +65,78 @@
 
 <script>
 $(function(){
-  layui.use(['element','flow','laypage'], function(){
+  layui.use(['element','flow','laypage','layer'], function(){
     var element = layui.element,
         flow = layui.flow,
-        laypage = layui.laypage
+        laypage = layui.laypage,
+        layer = layui.layer
     //一些事件监听
+    var tabindex = 0
     element.on('tab(docDemoTabBrief)', function(data){
       let searchtxt = $('#searchtxt').val()
       console.log(searchtxt);
       console.log(data.index);//从0开始
-      $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt+'&type='+data.index,function(result){
+      tabindex = data.index
+      $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt+'&type='+tabindex,function(result){
         let $result = $(result)
             $result.find("script").appendTo('#search_content') 
       })//load
     });//tab
 
     //分页
+    //调用分页
+    console.log('count--->','<%=count%>')
+  laypage.render({
+    elem: 'demo3'
+    ,theme: '#1E9FFF'
+    ,layout: ['count', 'prev', 'page', 'next']
+    ,count: '<%=count%>'//返回数据总数
+    ,curr: '<%=curr%>'//返回数据总数
+    ,jump: function(obj,first){
+      //首次不执行
+      if(first){
+        console.log('first--->',first)
+      }else{
+        //obj包含了当前分页的所有参数，比如：
+        console.log('click jump')
+        console.log('将请求第',obj.curr,'页')
+        console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+        console.log(obj.limit); //得到每页显示的条数
+        let searchtxt = $('#searchtxt').val()
+          $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt+'&type='+tabindex+'&page='+obj.curr+'&limit='+obj.limit,function(result){
+          let $result = $(result)
+              $result.find("script").appendTo('#search_content') 
+        })//load
+      }//else
+    }//jump
+  })//laypage
+  //click a 
+  $('.res_h3_a').on('click',function(){
+    console.log('this-->',this)
+    console.log('this-->',this.type)
+    console.log('this-->',this.innerHTML)
+    let type = this.type,
+        filename = this.innerHTML
+    if(type==0 || type==1 || type==3 || type==4){
+      console.log('office')
+      let ahref = encodeURI("http://qiandao.szu.edu.cn:81/csseinfo/myfile/" + "<%=user.cn%><%=user.alias%>/" +filename),
+          url = "https://docs.google.com/viewer?url="+ahref
+      window.open(url)
+    }
+    if(type==2){
+      console.log('pdf')
+      layer.open({
+          type: 2,
+          title: '预览',
+          shadeClose: true,
+          shade: 0.8,
+          area: ['1024px', '100%'],
+          content: 'http://qiandao.szu.edu.cn:81/csseinfo/myfile/ViewerJS/#../<%=user.cn%><%=user.alias%>/'+filename //iframe的url
+      });//layer
+    }
+  })//a click
   })//layui use
+  
 })
 
 </script>

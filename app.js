@@ -41,6 +41,7 @@ app.use(bodyParser.urlencoded({ limit:'10mb',extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/myfile',express.static(path.join(__dirname, 'upload')));
+app.use('/publicfile',express.static(path.join(__dirname, 'upload')));
 
 
 //add session

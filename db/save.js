@@ -23,7 +23,7 @@ var saveSchema = new Schema({
     filetag : {type : Array},//标签
     created_time:{
         type : String,
-        default : moment().format('YYYY-MM-DD hh:mm:ss')
+        default : moment().format('YYYY-MM-DD')
     }
 })
 

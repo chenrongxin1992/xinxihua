@@ -9,7 +9,7 @@ body {
   margin-bottom: 60px;
 }
 .footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
   /* Set the fixed height of the footer here */
@@ -29,8 +29,16 @@ body {
   margin-bottom: :0px!important;
 }
 .search_result{
-  min-height: 500px;
-  margin: 20px auto;
+  /*min-height: 800px;
+  margin: 30px auto;*/
+}
+#searchspan{
+      color: white;
+    border: 1px solid #2d78f4;
+    background-color: #3385ff;
+}
+#demo3{
+  margin-bottom: 50px;
 }
 #search_content{
   padding: 15px 15px;
@@ -44,23 +52,42 @@ body {
   font-family: arial,sans-serif;
 }
 .res_h3{
+  color: #38f;
   padding:0;
   font-size: 18px;
   line-height: 1.2;
   font-weight: normal;
-  margin: 0;
+  margin: 8px 0;
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-text-overflow: ellipsis;
   white-space: nowrap;
 }
+.res_h3_a{
+  color: #38f;
+}
+.res_h3_a:hover{
+  color: #38f;
+  cursor: pointer;
+  text-decoration:none;
+}
+.res_h3_a1{
+  color: #38f;
+}
+.res_h3_a1:hover{
+  color: #38f;
+  cursor: pointer;
+  text-decoration:none;
+}
 .res_content{
+  margin-bottom: 3px;
   line-height: 1.54;
   color: #545454;
   max-width: 48em;
 }
 .res_des{
+  font-size: 13px;
   height: 18px;
   line-height: 16px;
   color: #808080;
@@ -68,4 +95,19 @@ body {
 .res_op{
   line-height: 1.4;
   word-wrap: break-word;
+}
+#res_a{
+  font-size: 13px;
+}
+
+#res_a:hover{
+  color: #3385ff; 
+  text-decoration:none;
+}
+#res_tag{
+  color: red;
+  margin-right: 12px;
+}
+#res_cn{
+  margin-right: 12px;
 }

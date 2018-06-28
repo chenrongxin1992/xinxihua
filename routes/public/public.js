@@ -146,7 +146,18 @@ router.get('/', function(req, res, next) {
 router.get('/searchtxt',function(req,res){
 	let searchtxt = req.query.searchtxt,
 		filetype = req.query.type,
-		type = 0
+		type = 0,
+		page = req.query.page,
+		limit = req.query.limit
+
+	page ? page : 1;//当前页
+	limit ? limit : 10;//每页数据
+	if(!page){
+		page = 1
+	}
+	if(!limit){
+		limit = 10
+	}
 	if(!filetype || filetype==0){
 		filetype = ['doc','docx']
 	}else if(filetype==1){
@@ -168,31 +179,98 @@ router.get('/searchtxt',function(req,res){
 	console.log('type--->',type)
 	console.log('filetype--->',filetype)
 	console.log('searchtxt--->',searchtxt)
+
 	let reg = new RegExp(searchtxt,'i')//不区分大小写
-	let search = Save.find({//多条件模糊查询
-			$or : [
-				{filename:{$regex:reg}},
-				{filetag:{$regex:reg}},
-				{cn:{$regex:reg}}
-			]
+
+	async.waterfall([
+		function(cb){
+			let search = Save.find({//多条件模糊查询
+					$or : [
+						{filename:{$regex:reg}},
+						{filetag:{$regex:reg}},
+						{cn:{$regex:reg}}
+					]
+				}
+			)//search
+			search.where('filetype').in(filetype)
+			search.count()
+			search.exec(function(err,total){
+				if(err){
+					console.log('search total err--->',err)
+					cb(err)
+				}
+				cb(null,total)		
+			})
+		},
+		function(total,cb){
+			let numSkip = (page-1)*limit
+				limit = parseInt(limit)
+			console.log('check -- >',limit,page,numSkip)
+			let search = Save.find({//多条件模糊查询
+					$or : [
+						{filename:{$regex:reg}},
+						{filetag:{$regex:reg}},
+						{cn:{$regex:reg}}
+					]
+				}
+			)//search
+			search.where('filetype').in(filetype)
+			search.sort({'created_time':-1})
+			search.limit(limit)
+			search.skip(numSkip)
+			search.exec(function(err,docs){
+				if(err){
+					console.log('search err--->',err)
+					cb(err)
+				}
+				if(!docs){
+					console.log('kong--->',kong)
+					cb('no result')
+				}
+				if(docs){
+					//console.log('docs--->',docs)
+					let res = {}
+						res.docs = docs,
+						res.type = type,
+						res.count = total
+					cb(null,res)
+					//return res.render('public/search',{'docs':docs,'type':type,'count':total})//0.word,1.ppt,2.pdf,3.execl,4.txt,5.img
+				}
+			})
 		}
-	)//search
-	search.where('filetype').in(filetype)
-	search.sort({'created_time':-1})
-	search.limit(100)
-	search.exec(function(err,docs){
-		if(err){
-			console.log('search err--->',err)
+	],function(error,result){
+		if(error){
+			console.log('async waterfall final error')
 			return res.json({'code':-1,'msg':err})
 		}
-		if(!docs){
-			console.log('kong--->',kong)
-		}
-		if(docs){
-			console.log('docs--->',docs)
-			return res.render('public/search',{'docs':docs,'type':type})//0.word,1.ppt,2.pdf,3.execl,4.txt,5.img
-		}
+		console.log('result--->',result)
+		return res.render('public/search',{'docs':result.docs,'type':result.type,'count':result.count,'curr':page})
 	})
+	
+	// let search = Save.find({//多条件模糊查询
+	// 		$or : [
+	// 			{filename:{$regex:reg}},
+	// 			{filetag:{$regex:reg}},
+	// 			{cn:{$regex:reg}}
+	// 		]
+	// 	}
+	// )//search
+	// search.where('filetype').in(filetype)
+	// search.sort({'created_time':-1})
+	// search.limit(100)
+	// search.exec(function(err,docs){
+	// 	if(err){
+	// 		console.log('search err--->',err)
+	// 		return res.json({'code':-1,'msg':err})
+	// 	}
+	// 	if(!docs){
+	// 		console.log('kong--->',kong)
+	// 	}
+	// 	if(docs){
+	// 		console.log('docs--->',docs)
+	// 		return res.render('public/search',{'docs':docs,'type':type})//0.word,1.ppt,2.pdf,3.execl,4.txt,5.img
+	// 	}
+	// })
 })
 
 module.exports = router;
