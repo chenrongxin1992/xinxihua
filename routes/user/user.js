@@ -10,6 +10,7 @@ const moment = require('moment')
 const Save = require('../../db/save')
 const async = require('async')
 const newfs = require('fs-extra')
+const jimp = require('jimp')
 
 
 //redis
@@ -162,7 +163,10 @@ router.get('/pripdf',function(req,res){
 	console.log(page,limit)
 	async.waterfall([
 		function(cb){
-			let search = Save.find({}).count()
+			let search = Save.find({'filetype':{'$in':['pdf']}})
+				search.where('ispublic').equals(0)
+				search.where('isdelete').equals(0)
+				search.count()
 				search.exec(function(err,total){
 					if(err){
 						console.log('search err-->',err.stack)
@@ -187,10 +191,10 @@ router.get('/pripdf',function(req,res){
 						cb(err)
 					}
 					console.log('check docs-->',docs)
-					cb(null,docs)
+					cb(null,docs,total)
 				})
 		},
-		function(docs,cb){
+		function(docs,total,cb){
 			//重新封装数据
 			//重新封装数据
 			let data = []//最终数据
@@ -207,7 +211,7 @@ router.get('/pripdf',function(req,res){
 					data.push(tempdata)
 					delete tempdata
 				})
-				//data.count = total
+				data.count = total
 				console.log('返回数据-->',data)
 				cb(null,data)
 		}
@@ -216,7 +220,7 @@ router.get('/pripdf',function(req,res){
 			console.log('search err-->',err.stack)
 			return res.json({'code':-1,'msg':err.stack,'count':0,'data':''})
 		}
-		return res.json({'code':0,'msg':'获取数据成功','count':result.length,'data':result})
+		return res.json({'code':0,'msg':'获取数据成功','count':result.count,'data':result})
 	})
 })
 
@@ -233,7 +237,10 @@ router.get('/prippt',function(req,res){
 	console.log(page,limit)
 	async.waterfall([
 		function(cb){
-			let search = Save.find({}).count()
+			let search = Save.find({'filetype':{'$in':['ppt','pptx']}})
+				search.where('ispublic').equals(0)
+				search.where('isdelete').equals(0)
+				search.count()
 				search.exec(function(err,total){
 					if(err){
 						console.log('search err-->',err.stack)
@@ -258,10 +265,10 @@ router.get('/prippt',function(req,res){
 						cb(err)
 					}
 					console.log('check docs-->',docs)
-					cb(null,docs)
+					cb(null,docs,total)
 				})
 		},
-		function(docs,cb){
+		function(docs,total,cb){
 			//重新封装数据
 			//重新封装数据
 			let data = []//最终数据
@@ -278,7 +285,7 @@ router.get('/prippt',function(req,res){
 					data.push(tempdata)
 					delete tempdata
 				})
-				//data.count = total
+				data.count = total
 				console.log('返回数据-->',data)
 				cb(null,data)
 		}
@@ -287,7 +294,7 @@ router.get('/prippt',function(req,res){
 			console.log('search err-->',err.stack)
 			return res.json({'code':-1,'msg':err.stack,'count':0,'data':''})
 		}
-		return res.json({'code':0,'msg':'获取数据成功','count':result.length,'data':result})
+		return res.json({'code':0,'msg':'获取数据成功','count':result.count,'data':result})
 	})
 })
 
@@ -304,7 +311,10 @@ router.get('/priword',function(req,res){
 	console.log(page,limit)
 	async.waterfall([
 		function(cb){
-			let search = Save.find({}).count()
+			let search = Save.find({'filetype':{'$in':['doc','docx']}})
+				search.where('ispublic').equals(0)
+				search.where('isdelete').equals(0)
+				search.count()
 				search.exec(function(err,total){
 					if(err){
 						console.log('search err-->',err.stack)
@@ -329,10 +339,10 @@ router.get('/priword',function(req,res){
 						cb(err)
 					}
 					console.log('check docs-->',docs)
-					cb(null,docs)
+					cb(null,docs,total)
 				})
 		},
-		function(docs,cb){
+		function(docs,total,cb){
 			//重新封装数据
 			//重新封装数据
 			let data = []//最终数据
@@ -349,7 +359,7 @@ router.get('/priword',function(req,res){
 					data.push(tempdata)
 					delete tempdata
 				})
-				//data.count = total
+				data.count = total
 				console.log('返回数据-->',data)
 				cb(null,data)
 		}
@@ -358,7 +368,7 @@ router.get('/priword',function(req,res){
 			console.log('search err-->',err.stack)
 			return res.json({'code':-1,'msg':err.stack,'count':0,'data':''})
 		}
-		return res.json({'code':0,'msg':'获取数据成功','count':result.length,'data':result})
+		return res.json({'code':0,'msg':'获取数据成功','count':result.count,'data':result})
 	})
 })
 
@@ -375,7 +385,10 @@ router.get('/priexcel',function(req,res){
 	console.log(page,limit)
 	async.waterfall([
 		function(cb){
-			let search = Save.find({}).count()
+			let search = Save.find({'filetype':{'$in':['xls','xlsx']}})
+				search.where('ispublic').equals(0)
+				search.where('isdelete').equals(0)
+				search.count()
 				search.exec(function(err,total){
 					if(err){
 						console.log('search err-->',err.stack)
@@ -400,10 +413,10 @@ router.get('/priexcel',function(req,res){
 						cb(err)
 					}
 					console.log('check docs-->',docs)
-					cb(null,docs)
+					cb(null,docs,total)
 				})
 		},
-		function(docs,cb){
+		function(docs,total,cb){
 			//重新封装数据
 			//重新封装数据
 			let data = []//最终数据
@@ -420,7 +433,7 @@ router.get('/priexcel',function(req,res){
 					data.push(tempdata)
 					delete tempdata
 				})
-				//data.count = total
+				data.count = total
 				console.log('返回数据-->',data)
 				cb(null,data)
 		}
@@ -429,7 +442,7 @@ router.get('/priexcel',function(req,res){
 			console.log('search err-->',err.stack)
 			return res.json({'code':-1,'msg':err.stack,'count':0,'data':''})
 		}
-		return res.json({'code':0,'msg':'获取数据成功','count':result.length,'data':result})
+		return res.json({'code':0,'msg':'获取数据成功','count':result.count,'data':result})
 	})
 })
 
@@ -446,7 +459,10 @@ router.get('/pritxt',function(req,res){
 	console.log(page,limit)
 	async.waterfall([
 		function(cb){
-			let search = Save.find({}).count()
+			let search = Save.find({'filetype':{'$in':['txt']}})
+				search.where('ispublic').equals(0)
+				search.where('isdelete').equals(0)
+				search.count()
 				search.exec(function(err,total){
 					if(err){
 						console.log('search err-->',err.stack)
@@ -471,10 +487,10 @@ router.get('/pritxt',function(req,res){
 						cb(err)
 					}
 					console.log('check docs-->',docs)
-					cb(null,docs)
+					cb(null,docs,total)
 				})
 		},
-		function(docs,cb){
+		function(docs,total,cb){
 			//重新封装数据
 			//重新封装数据
 			let data = []//最终数据
@@ -491,7 +507,7 @@ router.get('/pritxt',function(req,res){
 					data.push(tempdata)
 					delete tempdata
 				})
-				//data.count = total
+				data.count = total
 				console.log('返回数据-->',data)
 				cb(null,data)
 		}
@@ -500,7 +516,7 @@ router.get('/pritxt',function(req,res){
 			console.log('search err-->',err.stack)
 			return res.json({'code':-1,'msg':err.stack,'count':0,'data':''})
 		}
-		return res.json({'code':0,'msg':'获取数据成功','count':result.length,'data':result})
+		return res.json({'code':0,'msg':'获取数据成功','count':result.count,'data':result})
 	})
 })
 
@@ -517,7 +533,10 @@ router.get('/priimg',function(req,res){
 	console.log(page,limit)
 	async.waterfall([
 		function(cb){
-			let search = Save.find({}).count()
+			let search = Save.find({'filetype':{'$in':['jpg','png','jpeg','gif','PNG','JPG','JPEG','GIF']}})
+				search.where('ispublic').equals(0)
+				search.where('isdelete').equals(0)
+				search.count()
 				search.exec(function(err,total){
 					if(err){
 						console.log('search err-->',err.stack)
@@ -542,10 +561,10 @@ router.get('/priimg',function(req,res){
 						cb(err)
 					}
 					console.log('check docs-->',docs)
-					cb(null,docs)
+					cb(null,docs,total)
 				})
 		},
-		function(docs,cb){
+		function(docs,total,cb){
 			//重新封装数据
 			//重新封装数据
 			let data = []//最终数据
@@ -562,7 +581,7 @@ router.get('/priimg',function(req,res){
 					data.push(tempdata)
 					delete tempdata
 				})
-				//data.count = total
+				data.count = total
 				console.log('返回数据-->',data)
 				cb(null,data)
 		}
@@ -571,7 +590,7 @@ router.get('/priimg',function(req,res){
 			console.log('search err-->',err.stack)
 			return res.json({'code':-1,'msg':err.stack,'count':0,'data':''})
 		}
-		return res.json({'code':0,'msg':'获取数据成功','count':result.length,'data':result})
+		return res.json({'code':0,'msg':'获取数据成功','count':result.count,'data':result})
 	})
 })
 
@@ -588,7 +607,10 @@ router.get('/pubppt',function(req,res){
 	console.log(page,limit)
 	async.waterfall([
 		function(cb){
-			let search = Save.find({}).count()
+			let search = Save.find({'filetype':{'$in':['ppt','pptx']}})
+				search.where('ispublic').equals(1)
+				search.where('isdelete').equals(0)
+				search.count()
 				search.exec(function(err,total){
 					if(err){
 						console.log('search err-->',err.stack)
@@ -613,10 +635,10 @@ router.get('/pubppt',function(req,res){
 						cb(err)
 					}
 					console.log('check docs-->',docs)
-					cb(null,docs)
+					cb(null,docs,total)
 				})
 		},
-		function(docs,cb){
+		function(docs,total,cb){
 			//重新封装数据
 			//重新封装数据
 			let data = []//最终数据
@@ -633,7 +655,7 @@ router.get('/pubppt',function(req,res){
 					data.push(tempdata)
 					delete tempdata
 				})
-				//data.count = total
+				data.count = total
 				console.log('返回数据-->',data)
 				cb(null,data)
 		}
@@ -642,7 +664,7 @@ router.get('/pubppt',function(req,res){
 			console.log('search err-->',err.stack)
 			return res.json({'code':-1,'msg':err.stack,'count':0,'data':''})
 		}
-		return res.json({'code':0,'msg':'获取数据成功','count':result.length,'data':result})
+		return res.json({'code':0,'msg':'获取数据成功','count':result.count,'data':result})
 	})
 })
 
@@ -659,7 +681,10 @@ router.get('/pubword',function(req,res){
 	console.log(page,limit)
 	async.waterfall([
 		function(cb){
-			let search = Save.find({}).count()
+			let search = Save.find({'filetype':{'$in':['doc','docx']}})
+				search.where('ispublic').equals(1)
+				search.where('isdelete').equals(0)
+				search.count()
 				search.exec(function(err,total){
 					if(err){
 						console.log('search err-->',err.stack)
@@ -684,10 +709,10 @@ router.get('/pubword',function(req,res){
 						cb(err)
 					}
 					console.log('check docs-->',docs)
-					cb(null,docs)
+					cb(null,docs,total)
 				})
 		},
-		function(docs,cb){
+		function(docs,total,cb){
 			//重新封装数据
 			//重新封装数据
 			let data = []//最终数据
@@ -704,7 +729,7 @@ router.get('/pubword',function(req,res){
 					data.push(tempdata)
 					delete tempdata
 				})
-				//data.count = total
+				data.count = total
 				console.log('返回数据-->',data)
 				cb(null,data)
 		}
@@ -713,7 +738,7 @@ router.get('/pubword',function(req,res){
 			console.log('search err-->',err.stack)
 			return res.json({'code':-1,'msg':err.stack,'count':0,'data':''})
 		}
-		return res.json({'code':0,'msg':'获取数据成功','count':result.length,'data':result})
+		return res.json({'code':0,'msg':'获取数据成功','count':result.count,'data':result})
 	})
 })
 
@@ -730,7 +755,10 @@ router.get('/pubexcel',function(req,res){
 	console.log(page,limit)
 	async.waterfall([
 		function(cb){
-			let search = Save.find({}).count()
+			let search = Save.find({'filetype':{'$in':['xls','xlsx']}})
+				search.where('ispublic').equals(1)
+				search.where('isdelete').equals(0)
+				search.count()
 				search.exec(function(err,total){
 					if(err){
 						console.log('search err-->',err.stack)
@@ -755,10 +783,10 @@ router.get('/pubexcel',function(req,res){
 						cb(err)
 					}
 					console.log('check docs-->',docs)
-					cb(null,docs)
+					cb(null,docs,total)
 				})
 		},
-		function(docs,cb){
+		function(docs,total,cb){
 			//重新封装数据
 			//重新封装数据
 			let data = []//最终数据
@@ -775,7 +803,7 @@ router.get('/pubexcel',function(req,res){
 					data.push(tempdata)
 					delete tempdata
 				})
-				//data.count = total
+				data.count = total
 				console.log('返回数据-->',data)
 				cb(null,data)
 		}
@@ -784,7 +812,7 @@ router.get('/pubexcel',function(req,res){
 			console.log('search err-->',err.stack)
 			return res.json({'code':-1,'msg':err.stack,'count':0,'data':''})
 		}
-		return res.json({'code':0,'msg':'获取数据成功','count':result.length,'data':result})
+		return res.json({'code':0,'msg':'获取数据成功','count':result.count,'data':result})
 	})
 })
 
@@ -797,17 +825,22 @@ router.get('/pubtxt',function(req,res){
 	let page = req.query.page,
 		limit = req.query.limit
 	page ? page : 1;//当前页
-	limit ? limit : 15;//每页数据
+	limit ? limit : 10;//每页数据
 	console.log(page,limit)
+	let count = 0
 	async.waterfall([
 		function(cb){
-			let search = Save.find({}).count()
+			let search = Save.find({'filetype':{'$in':['txt']}})
+				search.where('ispublic').equals(1)
+				search.where('isdelete').equals(0)
+				search.count()
 				search.exec(function(err,total){
 					if(err){
 						console.log('search err-->',err.stack)
 						cb(err)
 					}
 					console.log('记录总数-->',total)
+					count = total
 					cb(null,total)
 				})
 		},
@@ -825,7 +858,7 @@ router.get('/pubtxt',function(req,res){
 						console.log('search err-->',err.stack)
 						cb(err)
 					}
-					console.log('check docs-->',docs)
+					//console.log('check docs-->',docs)
 					cb(null,docs)
 				})
 		},
@@ -835,7 +868,7 @@ router.get('/pubtxt',function(req,res){
 			let data = []//最终数据
 			docs.forEach(function(item,index){
 				let tempdata = {}
-					console.log('item-->',item)
+					//console.log('item-->',item)
 					tempdata._id = item._id
 					tempdata.filename = item.filename
 					tempdata.filetype = item.filetype
@@ -847,7 +880,7 @@ router.get('/pubtxt',function(req,res){
 					delete tempdata
 				})
 				//data.count = total
-				console.log('返回数据-->',data)
+				//console.log('返回数据-->',data)
 				cb(null,data)
 		}
 	],function(error,result){
@@ -855,7 +888,9 @@ router.get('/pubtxt',function(req,res){
 			console.log('search err-->',err.stack)
 			return res.json({'code':-1,'msg':err.stack,'count':0,'data':''})
 		}
-		return res.json({'code':0,'msg':'获取数据成功','count':result.length,'data':result})
+		//console.log('result.length',result.length)
+		//let count = result.count
+		return res.json({'code':0,'msg':'获取数据成功','count':count,'data':result})
 	})
 })
 
@@ -872,7 +907,10 @@ router.get('/pubimg',function(req,res){
 	console.log(page,limit)
 	async.waterfall([
 		function(cb){
-			let search = Save.find({}).count()
+			let search = Save.find({'filetype':{'$in':['jpg','png','jpeg','gif','PNG']}})
+				search.where('ispublic').equals(1)
+				search.where('isdelete').equals(0)
+				search.count()
 				search.exec(function(err,total){
 					if(err){
 						console.log('search err-->',err.stack)
@@ -897,10 +935,10 @@ router.get('/pubimg',function(req,res){
 						cb(err)
 					}
 					console.log('check docs-->',docs)
-					cb(null,docs)
+					cb(null,docs,total)
 				})
 		},
-		function(docs,cb){
+		function(docs,total,cb){
 			//重新封装数据
 			//重新封装数据
 			let data = []//最终数据
@@ -917,7 +955,7 @@ router.get('/pubimg',function(req,res){
 					data.push(tempdata)
 					delete tempdata
 				})
-				//data.count = total
+				data.count = total
 				console.log('返回数据-->',data)
 				cb(null,data)
 		}
@@ -926,7 +964,7 @@ router.get('/pubimg',function(req,res){
 			console.log('search err-->',err.stack)
 			return res.json({'code':-1,'msg':err.stack,'count':0,'data':''})
 		}
-		return res.json({'code':0,'msg':'获取数据成功','count':result.length,'data':result})
+		return res.json({'code':0,'msg':'获取数据成功','count':result.count,'data':result})
 	})
 })
 
@@ -945,7 +983,10 @@ router.get('/pubpdf',function(req,res){
 	console.log(page,limit,keyword)
 	async.waterfall([
 		function(cb){
-			let search = Save.find({}).count()
+			let search = Save.find({'filetype':{'$in':['pdf']}})
+				search.where('ispublic').equals(1)
+				search.where('isdelete').equals(0)
+				search.count()
 				search.exec(function(err,total){
 					if(err){
 						console.log('search err-->',err.stack)
@@ -988,7 +1029,7 @@ router.get('/pubpdf',function(req,res){
 										{filetag:{$regex:qs_keyword}}
 									]
 								})
-								search1
+								search1.where('filetype').in(['pdf'])
 								search1.where('ispublic').equals(1)
 								search1.where('isdelete').equals(0)
 								search1.count()
@@ -1046,7 +1087,7 @@ router.get('/pubpdf',function(req,res){
 			console.log('search err-->',err.stack)
 			return res.json({'code':-1,'msg':err.stack,'count':0,'data':''})
 		}
-		return res.json({'code':0,'msg':'获取数据成功','count':result.length,'data':result})
+		return res.json({'code':0,'msg':'获取数据成功','count':result.count,'data':result})
 	})
 })
 
@@ -1091,7 +1132,11 @@ router.get('/upload',function(req,res){
 			    	if(err){
 			    		console.log(err)
 			    	}
-
+			    	console.log('fields--->',fields)
+			    	console.log()
+			    	console.log('files--->',files)
+			    	console.log()
+			    	console.log('files file[0]--->',files.file)
 			    	let fullfilename = files.file[0].originalFilename, //xxxx.ppt
 			    		tmp = fullfilename.split('.')
 
@@ -1120,28 +1165,38 @@ router.get('/upload',function(req,res){
 				    	let checkheaders = files.file[0].headers
 				    	console.log('checkheaders--->',checkheaders)
 
-				    	let tmpcontent_typearr = JSON.stringify(checkheaders).split(',')
-
-				    	// if(reg.test(tmpcontent_typearr[tmpcontent_typearr.length-1])){
-				    	// 	console.log('上传图片')
-				    	// 	//在public创建用户的文件夹
-				    	// 	let tmpuserimgdir = path.resolve(__dirname+'../../../public')
-				    	// 	console.log('tmpuserimgdir--->',tmpuserimgdir)//G:\xinxihua\routes\public
-				    	// 	let userimgdir = tmpuserimgdir + '\\' + result.user.cn + result.user.alias
-				    	// 	console.log('userimgdir--->',userimgdir)
-				    	// 	fs.existsSync(userimgdir) || fs.mkdirSync(userimgdir)
-				    	// 	//同步将新文件copy到public文件夹中
-				    	// 	copyfile(userDir+'\\'+newfullfilename,userimgdir+'\\'+newfullfilename)
-				    	// 	//return false
-				    	// }
-				    	//return false
+				    	let tmpcontent_typearr = JSON.stringify(checkheaders).split(','),
+				    		imgsuolvepath = null,
+				    		finalname2 = null
+				    	if(reg.test(tmpcontent_typearr[tmpcontent_typearr.length-1])){
+				    		console.log('上传图片')
+				    		let filename_arr = newfullfilename.split('.')
+				    		console.log('filename_arr-->',filename_arr)
+				    		let filenametmp1 = filename_arr[0] + 'new',
+				    			filenametmp2 = filename_arr[0] + 'sl'
+				    			finalname1 = filenametmp1+'.'+filename_arr[1],
+				    			imgsuolvepath = finalname1,
+				    			finalname2 = finalname1
+				    		console.log('finalname1--->',finalname1)
+				    		
+				    		jimp.read(userDir+'\\'+newfullfilename).then(function(lenna){
+				    			return lenna.resize(jimp.AUTO, 280)
+				    						.quality(80)
+				    						.write(userDir+'\\'+finalname1)
+				    		}).catch(function(err){
+				    			console.log('jimp err',err)
+				    		})
+				    	}
       					let save = new Save({
+      						imgsuolvepath:userDir+'\\'+finalname2,
       						imgsrc: result.user.cn + result.user.alias + '/' + newfullfilename,
       						downloadLink:'http://qiandao.szu.edu.cn:81/csseinfo/myfile/'+result.user.cn+result.user.alias+'/'+newfullfilename,
       						//downloadLink:encodeURI(userDir),
+      						previewlink:'http://qiandao.szu.edu.cn:81/csseinfo/publicfile/'+result.user.cn+result.user.alias+'/'+newfullfilename,
       						cn : result.user.cn,
       						alias :result.user.alias,
       						filename : newfullfilename,
+      						finalname : finalname2,
       						filetype : filetype,
       						filesize : filesize+' Byte',
       						filepath : userDir+'\\'+newfullfilename

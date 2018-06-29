@@ -233,6 +233,7 @@ router.get('/searchtxt',function(req,res){
 						res.docs = docs,
 						res.type = type,
 						res.count = total
+						res.curr = page
 					cb(null,res)
 					//return res.render('public/search',{'docs':docs,'type':type,'count':total})//0.word,1.ppt,2.pdf,3.execl,4.txt,5.img
 				}
@@ -244,7 +245,7 @@ router.get('/searchtxt',function(req,res){
 			return res.json({'code':-1,'msg':err})
 		}
 		console.log('result--->',result)
-		return res.render('public/search',{'docs':result.docs,'type':result.type,'count':result.count,'curr':page})
+		return res.render('public/search',{'docs':result.docs,'type':result.type,'count':result.count,'curr':result.curr})
 	})
 	
 	// let search = Save.find({//多条件模糊查询

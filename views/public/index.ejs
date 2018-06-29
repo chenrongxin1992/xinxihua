@@ -59,7 +59,7 @@
       </div>
 
       <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-12 col-xs-12">
-      	<form class="">
+      	<form class="" onSubmit="return false;">
             <div class="input-group">
                 <input id="searchtxt" type="text" class="form-control" onkeydown="onKeyDown(event)"/>
                 <span id="searchspan" class="input-group-addon btn "><i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;搜索</span>
@@ -92,6 +92,7 @@
     <script src="/csseinfo/javascripts/layui.all.js"></script>
     <script type="text/javascript" src="/csseinfo/javascripts/lightbox-2.6.min.js"></script>
     <script src="/csseinfo/javascripts/bootstrap-paginator.min.js"></script>
+    <script type="text/javascript" src="/csseinfo/javascripts/jquery.text.js"></script>
     <script type="text/javascript">
         function onKeyDown(event){
             var e = event || window.event || arguments.callee.caller.arguments[0];
@@ -102,7 +103,23 @@
                      //要做的事情
             }            
             if(e && e.keyCode==13){ // enter 键
-                alert("此处回车触发搜索事件");
+                //alert("此处回车触发搜索事件");
+                console.log('按回车')
+
+                  let searchtxt = $('#searchtxt').val()
+                  console.log('check searchtxt---->',searchtxt)
+                  if(!searchtxt){
+                    return false
+                  }else{
+                      $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt,function(result){
+                        let $result = $(result)
+                            $result.find("script").appendTo('#search_content') 
+                            //keywordHighlight('hightlightcontent',searchtxt)
+                            $('#hightlightcontent').textSearch(searchtxt)
+                        return false
+                      })//load
+                  }
+                  return false
             }
         }
         $(function(){
@@ -115,28 +132,49 @@
                 $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt,function(result){
                   let $result = $(result)
                       $result.find("script").appendTo('#search_content') 
+                      keywordHighlight('hightlightcontent',searchtxt)
                 })//load
             }
-            
-            // $.ajax({
-            //   method:'POST',
-            //   url:'/csseinfo/public/searchtxt',
-            //   data:{
-            //     searchtxt:searchtxt
-            //   },
-            //   success:function(result){
-            //     console.log('result--->',result)
-            //     let $result = $(result)
-            //         $result.appendTo('#search_content')  
-            //   },
-            //   error:function(error){
-            //     console.log('error---->',error)
-            //   }
-            // })//ajax
+          
           })//click
           //layui
           
         })//exect
+        /*关键词检索高亮标出
+         *param idHtmlContent 需要检索的HTML内容ID
+         *param keyword 关键字，多个以空格隔开
+         */
+        function keywordHighlight(idHtmlContent,keyword) {
+          console.log('idHtmlContent--->',idHtmlContent)
+          var content= $("#"+idHtmlContent).html();//获取内容
+          if ($.trim(keyword)==""){
+            return;//关键字为空则返回
+          }
+          var htmlReg = new RegExp("\<.*?\>", "i");
+          var arrA = new Array();
+          //替换HTML标签
+          for (var i = 0; true; i++) {
+            var m = htmlReg.exec(content);
+            if (m) {
+              arrA[i] = m;
+            }else {
+              break;
+            }
+            content = content.replace(m, "{[(" + i + ")]}");
+          }
+          words = unescape(keyword.replace(/\+/g, ' ')).split(/\s+/);
+          //替换关键字 
+          for (w = 0; w < words.length; w++) {
+            var r = new RegExp("(" + words[w].replace(/[(){}.+*?^$|\\\[\]]/g, "\\$&") + ")", "ig");
+            content = content.replace(r, "<b><span style='color:red;'>"+words[w]+"</span></b>");//关键字样式
+          }
+          //恢复HTML标签 
+          for (var i = 0; i < arrA.length; i++) {
+            content = content.replace("{[(" + i + ")]}", arrA[i]);
+          }
+           $("#"+idHtmlContent).html(content);
+        }
+
         </script> 
         <div id="Layer1" style="display:none;position:absolute;z-index:1;"></div>
         <!-- 鼠标上移显示图片 -->

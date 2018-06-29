@@ -8,11 +8,16 @@
 	            <i class="glyphicon glyphicon-upload"></i>
 	            <span>开始上传</span>
 	    </button>
+	    <button type="submit" class="btn btn-info refresh">
+	            <i class="glyphicon glyphicon-refresh"></i>
+	            <span>清空记录</span>
+	    </button>
 	</div>
 </div>
 
 
 <script type="text/javascript">
+	
 	var countfile = 0,
 		checkcountfile = 0
     //下面两行是js和jquery的方式实现绑定div的例子，你选择一种即可
@@ -22,8 +27,8 @@
     	addRemoveLinks: true,        
         method: 'post',
         filesizeBase: 1024,
-        maxFilesize: 10, //文件大小，单位：MB
-        MaxFiles:5,
+        maxFilesize: 25, //文件大小，单位：MB
+        MaxFiles:8,
         acceptedFiles: ".doc,.docx,.xls,.xlsx,.png,.jpg,.ppt,.pptx,.gif,.jpeg,.txt,.pdf", //上传的类型
         //previewTemplate: $('#preview-template').html(),//如果去掉该选项就会使用默认的
         autoQueue: false,
@@ -36,16 +41,16 @@
         dictRemoveLinks: "删除",
         dictCancelUpload: "取消",
         dictCancelUploadConfirmation:"确定要取消上传该文件吗",
-        dictRemoveFile:"移除文件",
+        dictRemoveFile:"删除文件",
         init:function(){
         	var self = this
 			this.on('addedfile',function(file){
 				countfile = countfile+1
 				console.log('countfile---->',countfile)
-				if(countfile > 5){
+				if(countfile > 8){
 					layer.open({
 					  title: '提示'
-					  ,content: '一次性只能上传4个文件,请重新选择',
+					  ,content: '一次性只能上传8个文件,请重新选择',
 					  end:function(){
 					  	//消失回调
 					  	countfile = 0
@@ -66,7 +71,14 @@
                     		content:'该文件已上传'
                     	})
                     }
-                })       
+                })  //start
+                $(".refresh").click (function() { 
+					console.log('clear records')
+					$('#maincontent').load('/csseinfo/user/upload',function(result){
+	                    let $result = $(result)
+	                    $result.find("script").appendTo('#maincontent')                   
+	                  })
+				})     
 				console.log('add file---->',file)
 			})//addedfile
 

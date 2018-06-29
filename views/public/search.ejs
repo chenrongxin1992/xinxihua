@@ -35,28 +35,50 @@
 
   </ul>
   <div class="layui-tab-content" style="height: 100px;">
-      <div class="layui-tab-item layui-show">
-      <%docs.forEach(function(item,index,docs){%>
-        <div class="res_item">
-          <h3 class="res_h3">
-            <%if(type!=5){%>
-              <a class="res_h3_a" type="<%=type%>"><%=item.filename%></a>
-            <%}else{%>
-              <a class="res_h3_a1" href="/csseinfo/publicfile/<%=user.cn%><%=user.alias%>/<%=item.filename%>" data-lightbox="<%=item.filename%>" title="<%=item.filename%>"><%=item.filename%></a>
-            <%}%>
-          </h3>
-          <div class="res_content">
-            <div class="res_des">
-              标签：<%if(item.filetag.length){%><span id="res_tag"><%=item.filetag%>,</span><%}else{%>暂无，<%}%>
-              上传者：<span class="res_cn"><%=item.cn%>，</span>
-              上传时间：<%=item.created_time%>
-            </div>
-            <div class="res_op">
-              <a id="res_a" href="<%=item.downloadLink%>" download><i class="icon-download-alt"></i>下载</a>
+      <div class="layui-tab-item layui-show" id="hightlightcontent">
+      <%if(type!=5){%>
+        <%docs.forEach(function(item,index,docs){%>
+          <div class="res_item">
+            <h3 class="res_h3">
+              <%if(type!=5){%>
+                <a class="res_h3_a" type="<%=type%>"><%=item.filename%></a>
+              <%}else{%>
+                <a class="res_h3_a1" href="/csseinfo/publicfile/<%=user.cn%><%=user.alias%>/<%=item.filename%>" data-lightbox="<%=item.filename%>" title="<%=item.filename%>"><img src="/csseinfo/publicfile/<%=user.cn%><%=user.alias%>/<%=item.finalname%>"></a>
+              <%}%>
+            </h3>
+            <div class="res_content">
+              <div class="res_des">
+                标签：<%if(item.filetag.length){%><span id="res_tag"><%=item.filetag%>,</span><%}else{%>暂无，<%}%>
+                上传者：<span class="res_cn"><%=item.cn%>，</span>
+                上传时间：<%=item.created_time%>
+              </div>
+              <div class="res_op">
+                <a id="res_a" href="<%=item.downloadLink%>" download><i class="icon-download-alt"></i>下载</a>
+              </div>
             </div>
           </div>
-        </div>
-        <%})%>
+          <%})%>
+        <%}else{%>
+          <%docs.forEach(function(item,index,docs){%>
+            <div class="single-member effect-2">
+              <div class="member-image">
+                  <img src="/csseinfo/publicfile/<%=user.cn%><%=user.alias%>/<%=item.finalname%>" class="img-responsive">
+              </div>
+              <div class="member-info">
+                <h3><%=item.filename%></h3>
+                <span>标签：<%if(item.filetag.length){%><span id="res_tag"><%=item.filetag%>,</span><%}else{%>暂无，<%}%></span><br/>
+                <span>上传者：<span class="res_cn"><%=item.cn%>，</span><br/>
+                <span>上传时间：<%=item.created_time%></span>
+                <div class="social-touch">
+                  <a class="fb-touch" href="/csseinfo/publicfile/<%=user.cn%><%=user.alias%>/<%=item.filename%>" data-lightbox="<%=item.filename%>" title="<%=item.filename%>">预览</a>
+                  <a class="tweet-touch" href="<%=item.previewlink%>">下载</a>
+                </div>
+              </div>
+            </div>
+
+          <%})%>
+          <div style="clear:both;"></div>
+        <%}%>
       </div>
 
       <div id="demo3"></div>
@@ -65,29 +87,34 @@
 
 <script>
 $(function(){
+var tabindex = '<%=type%>'
+
+console.log('11111',tabindex)
   layui.use(['element','flow','laypage','layer'], function(){
     var element = layui.element,
         flow = layui.flow,
         laypage = layui.laypage,
         layer = layui.layer
     //一些事件监听
-    var tabindex = 0
+    
     element.on('tab(docDemoTabBrief)', function(data){
       let searchtxt = $('#searchtxt').val()
       console.log(searchtxt);
       console.log(data.index);//从0开始
       tabindex = data.index
+      console.log('tab jianting',tabindex)
       $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt+'&type='+tabindex,function(result){
         let $result = $(result)
             $result.find("script").appendTo('#search_content') 
+            $('#hightlightcontent').textSearch(searchtxt)
       })//load
     });//tab
 
     //分页
     //调用分页
-    console.log('count--->','<%=count%>')
   laypage.render({
     elem: 'demo3'
+    
     ,theme: '#1E9FFF'
     ,layout: ['count', 'prev', 'page', 'next']
     ,count: '<%=count%>'//返回数据总数
@@ -102,10 +129,12 @@ $(function(){
         console.log('将请求第',obj.curr,'页')
         console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
         console.log(obj.limit); //得到每页显示的条数
+        console.log('click jump tab',tabindex); //tabindex
         let searchtxt = $('#searchtxt').val()
           $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt+'&type='+tabindex+'&page='+obj.curr+'&limit='+obj.limit,function(result){
           let $result = $(result)
               $result.find("script").appendTo('#search_content') 
+              $('#hightlightcontent').textSearch(searchtxt)
         })//load
       }//else
     }//jump

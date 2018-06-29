@@ -8,6 +8,9 @@ var mongoose = require('./db'),
     Schema = mongoose.Schema
 
 var saveSchema = new Schema({ 
+    previewlink:{type:String},//公共预览链接
+    finalname:{type:String},//缩略图文件名
+    imgsuolvepath:{type:String},//缩略图路径
     isdelete:{type:Number,default:0},//删除标识
     imgsrc : {type:String},
     downloadLink:{type:String},
