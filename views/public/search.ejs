@@ -140,30 +140,31 @@ console.log('11111',tabindex)
     }//jump
   })//laypage
   //click a 
-  $('.res_h3_a').on('click',function(){
-    console.log('this-->',this)
-    console.log('this-->',this.type)
-    console.log('this-->',this.innerHTML)
-    let type = this.type,
-        filename = this.innerHTML
-    if(type==0 || type==1 || type==3 || type==4){
-      console.log('office')
-      let ahref = encodeURI("http://qiandao.szu.edu.cn:81/csseinfo/myfile/" + "<%=user.cn%><%=user.alias%>/" +filename),
-          url = "https://docs.google.com/viewer?url="+ahref
-      window.open(url)
-    }
-    if(type==2){
-      console.log('pdf')
-      layer.open({
-          type: 2,
-          title: '预览',
-          shadeClose: true,
-          shade: 0.8,
-          area: ['1024px', '100%'],
-          content: 'http://qiandao.szu.edu.cn:81/csseinfo/myfile/ViewerJS/#../<%=user.cn%><%=user.alias%>/'+filename //iframe的url
-      });//layer
-    }
-  })//a click
+  $('#hightlightcontent').on('click','a',function(){
+      console.log('this-->',this)
+      console.log('this-->',this.type)
+      console.log('this-->',this.innerHTML)
+      let type = this.type,
+          filename = this.innerHTML
+
+      if(type && (type==0 || type==1 || type==3 || type==4)){
+        console.log('office')
+        let ahref = encodeURI("http://qiandao.szu.edu.cn:81/csseinfo/myfile/" + "<%=user.cn%><%=user.alias%>/" +filename),
+            url = "https://docs.google.com/viewer?url="+ahref
+        window.open(url)
+      }
+      if(type==2){
+        console.log('pdf')
+        layer.open({
+            type: 2,
+            title: '预览',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['1024px', '100%'],
+            content: 'http://qiandao.szu.edu.cn:81/csseinfo/myfile/ViewerJS/#../<%=user.cn%><%=user.alias%>/'+filename //iframe的url
+        });//layer
+      }
+  })
   })//layui use
   
 })
