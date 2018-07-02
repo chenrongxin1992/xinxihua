@@ -103,7 +103,7 @@ console.log('11111',tabindex)
       console.log(data.index);//从0开始
       tabindex = data.index
       console.log('tab jianting',tabindex)
-      $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt+'&type='+tabindex,function(result){
+      $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+encodeURIComponent(searchtxt)+'&type='+tabindex,function(result){
         let $result = $(result)
             $result.find("script").appendTo('#search_content') 
             $('#hightlightcontent').textSearch(searchtxt)
@@ -131,7 +131,7 @@ console.log('11111',tabindex)
         console.log(obj.limit); //得到每页显示的条数
         console.log('click jump tab',tabindex); //tabindex
         let searchtxt = $('#searchtxt').val()
-          $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt+'&type='+tabindex+'&page='+obj.curr+'&limit='+obj.limit,function(result){
+          $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+encodeURIComponent(searchtxt)+'&type='+tabindex+'&page='+obj.curr+'&limit='+obj.limit,function(result){
           let $result = $(result)
               $result.find("script").appendTo('#search_content') 
               $('#hightlightcontent').textSearch(searchtxt)

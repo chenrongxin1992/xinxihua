@@ -144,7 +144,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/searchtxt',function(req,res){
-	let searchtxt = req.query.searchtxt,
+	let searchtxt = decodeURIComponent(req.query.searchtxt),
 		filetype = req.query.type,
 		type = 0,
 		page = req.query.page,
@@ -180,18 +180,33 @@ router.get('/searchtxt',function(req,res){
 	console.log('filetype--->',filetype)
 	console.log('searchtxt--->',searchtxt)
 
-	let reg = new RegExp(searchtxt,'i')//不区分大小写
-
+	//let reg = new RegExp(searchtxt,'i')//不区分大小写
+	let key_arr = []
 	async.waterfall([
 		function(cb){
+			let word_arr = searchtxt.split(" ")
+			word_arr.forEach(function(item,index){
+				console.log('item--->',item)
+				key_arr.push({'filename':{'$regex':new RegExp(item,'i')}})
+				key_arr.push({'filetag':{'$regex':new RegExp(item,'i')}})
+				key_arr.push({'cn':{'$regex':new RegExp(item,'i')}})
+			})
+			console.log('key_arr--->',key_arr)
+			cb(null)
+		},
+		function(cb){
 			let search = Save.find({//多条件模糊查询
-					$or : [
-						{filename:{$regex:reg}},
-						{filetag:{$regex:reg}},
-						{cn:{$regex:reg}}
-					]
+					$or : key_arr
 				}
 			)//search
+			// let search = Save.find({//多条件模糊查询
+			// 		$or : [
+			// 			{filename:{$regex:reg}},
+			// 			{filetag:{$regex:reg}},
+			// 			{cn:{$regex:reg}}
+			// 		]
+			// 	}
+			// )//search
 			search.where('filetype').in(filetype)
 			search.count()
 			search.exec(function(err,total){
@@ -207,13 +222,17 @@ router.get('/searchtxt',function(req,res){
 				limit = parseInt(limit)
 			console.log('check -- >',limit,page,numSkip)
 			let search = Save.find({//多条件模糊查询
-					$or : [
-						{filename:{$regex:reg}},
-						{filetag:{$regex:reg}},
-						{cn:{$regex:reg}}
-					]
+					$or : key_arr
 				}
 			)//search
+			// let search = Save.find({//多条件模糊查询
+			// 		$or : [
+			// 			{filename:{$regex:reg}},
+			// 			{filetag:{$regex:reg}},
+			// 			{cn:{$regex:reg}}
+			// 		]
+			// 	}
+			// )//search
 			search.where('filetype').in(filetype)
 			search.sort({'created_time':-1})
 			search.limit(limit)

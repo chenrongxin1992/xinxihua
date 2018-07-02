@@ -111,7 +111,7 @@
                   if(!searchtxt){
                     return false
                   }else{
-                      $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt,function(result){
+                      $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+encodeURIComponent(searchtxt),function(result){
                         let $result = $(result)
                             $result.find("script").appendTo('#search_content') 
                             //keywordHighlight('hightlightcontent',searchtxt)
@@ -129,10 +129,10 @@
             if(!searchtxt){
               return false
             }else{
-                $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+searchtxt,function(result){
+                $('#search_content').load('/csseinfo/public/searchtxt?searchtxt='+encodeURIComponent(searchtxt),function(result){
                   let $result = $(result)
                       $result.find("script").appendTo('#search_content') 
-                      keywordHighlight('hightlightcontent',searchtxt)
+                      $('#hightlightcontent').textSearch(searchtxt)
                 })//load
             }
           
