@@ -7,7 +7,9 @@ const moment = require('moment')
 var mongoose = require('./db'),
     Schema = mongoose.Schema
 
-var saveSchema = new Schema({ 
+var saveSchema = new Schema({
+    srctmpname:{type:String},//tmpname
+    sourcenochinese:{type:String}, //存放目录，不含中文
     previewlink:{type:String},//公共预览链接
     finalname:{type:String},//缩略图文件名
     imgsuolvepath:{type:String},//缩略图路径

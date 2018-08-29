@@ -1115,10 +1115,12 @@ router.get('/upload',function(req,res){
 	    if(redisres && redisres!='undefined'){
 	    	//console.log('req.body---->',req)
 	        let result = JSON.parse(redisres),
-	        	userDir = baseUploadDir + '\\' + result.user.cn + result.user.alias
+	        	userDir = baseUploadDir + '\\' + result.user.cn + result.user.alias,
+	        	userdir1 = baseUploadDir + '\\' + result.user.alias
 	        console.log('baseUploadDir--->',baseUploadDir)
 	        console.log('userDir--->',userDir)
 	        fs.existsSync(userDir) || fs.mkdirSync(userDir)
+	        fs.existsSync(userdir1) || fs.mkdirSync(userdir1)
 	        let form = new multiparty.Form();
 			    //设置编码
 			    form.encoding = 'utf-8';
@@ -1152,67 +1154,77 @@ router.get('/upload',function(req,res){
 			    	console.log('filename--->',filename)
 			    	let newfullfilename = filename + '.' +filetype
 			    	let tmpfilename = userDir+'\\'+getfilename.split('\\')[4]
+			    	let nochinesesrc = userdir1+'\\'+getfilename.split('\\')[4],
+			    		srctmpname = getfilename.split('\\')[4]
 			    	console.log('tmpfilename--->',tmpfilename)
 			    	console.log('newfullfilename--->',newfullfilename)
-			    	//同步重命名文件名
-      				fs.rename(tmpfilename,userDir+'\\'+newfullfilename,function(err,fsresult){
-      					if(err){
-      						console.log('rename err---->',err)
-      						return res.json({'code':-1})
-      					}
-      					//如果是图片，存下图片位置，方便预览
-				    	let reg = RegExp(/image/)
-				    	let checkheaders = files.file[0].headers
-				    	console.log('checkheaders--->',checkheaders)
+			    	newfs.copy(tmpfilename,nochinesesrc,function(newfserr){
+			    		if(newfserr){
+			    			console.log('newfs err--->',newfserr)
+			    		}
+			    		fs.rename(tmpfilename,userDir+'\\'+newfullfilename,function(err,fsresult){
+	      					if(err){
+	      						console.log('rename err---->',err)
+	      						return res.json({'code':-1})
+	      					}
+	      					//如果是图片，存下图片位置，方便预览
+					    	let reg = RegExp(/image/)
+					    	let checkheaders = files.file[0].headers
+					    	console.log('checkheaders--->',checkheaders)
 
-				    	let tmpcontent_typearr = JSON.stringify(checkheaders).split(','),
-				    		imgsuolvepath = null,
-				    		finalname2 = null
-				    	if(reg.test(tmpcontent_typearr[tmpcontent_typearr.length-1])){
-				    		console.log('上传图片')
-				    		let filename_arr = newfullfilename.split('.')
-				    		console.log('filename_arr-->',filename_arr)
-				    		let filenametmp1 = filename_arr[0] + 'new',
-				    			filenametmp2 = filename_arr[0] + 'sl'
-				    			finalname1 = filenametmp1+'.'+filename_arr[1],
-				    			imgsuolvepath = finalname1,
-				    			finalname2 = finalname1
-				    		console.log('finalname1--->',finalname1)
-				    		
-				    		jimp.read(userDir+'\\'+newfullfilename).then(function(lenna){
-				    			return lenna.resize(jimp.AUTO, 280)
-				    						.quality(80)
-				    						.write(userDir+'\\'+finalname1)
-				    		}).catch(function(err){
-				    			console.log('jimp err',err)
-				    		})
-				    	}
-      					let save = new Save({
-      						imgsuolvepath:userDir+'\\'+finalname2,
-      						imgsrc: result.user.cn + result.user.alias + '/' + newfullfilename,
-      						downloadLink:'http://qiandao.szu.edu.cn:81/csseinfo/myfile/'+result.user.cn+result.user.alias+'/'+newfullfilename,
-      						//downloadLink:encodeURI(userDir),
-      						previewlink:'http://qiandao.szu.edu.cn:81/csseinfo/publicfile/'+result.user.cn+result.user.alias+'/'+newfullfilename,
-      						cn : result.user.cn,
-      						alias :result.user.alias,
-      						filename : newfullfilename,
-      						finalname : finalname2,
-      						filetype : filetype,
-      						filesize : filesize+' Byte',
-      						filepath : userDir+'\\'+newfullfilename
-      						//filepath : 'qiandao.szu.edu.cn:81/csseinfo/myfile/'+result.user.cn+result.user.alias+'/'+newfullfilename
-      					})
-      					save.save(function(err,doc){
-      						if(err){
-      							console.log('save info err--->',err)
-      							return res.json({'code':-1})
-      						}
-      						//console.log('fields---->',fields)
-					    	console.log('files---->',files)
-					    	console.log('files---->',files.file[0].headers)
-					    	return res.json({'code':0,'doc':doc})
-      					})
-      				});
+					    	let tmpcontent_typearr = JSON.stringify(checkheaders).split(','),
+					    		imgsuolvepath = null,
+					    		finalname2 = null
+					    	if(reg.test(tmpcontent_typearr[tmpcontent_typearr.length-1])){
+					    		console.log('上传图片')
+					    		let filename_arr = newfullfilename.split('.')
+					    		console.log('filename_arr-->',filename_arr)
+					    		let filenametmp1 = filename_arr[0] + 'new',
+					    			filenametmp2 = filename_arr[0] + 'sl'
+					    			finalname1 = filenametmp1+'.'+filename_arr[1],
+					    			imgsuolvepath = finalname1,
+					    			finalname2 = finalname1
+					    		console.log('finalname1--->',finalname1)
+					    		
+					    		jimp.read(userDir+'\\'+newfullfilename).then(function(lenna){
+					    			return lenna.resize(jimp.AUTO, 280)
+					    						.quality(80)
+					    						.write(userDir+'\\'+finalname1)
+					    		}).catch(function(err){
+					    			console.log('jimp err',err)
+					    		})
+					    	}
+	      					let save = new Save({
+	      						srctmpname:srctmpname,
+	      						sourcenochinese:nochinesesrc,
+	      						imgsuolvepath:userDir+'\\'+finalname2,
+	      						imgsrc: result.user.cn + result.user.alias + '/' + newfullfilename,
+	      						downloadLink:'http://qiandao.szu.edu.cn:81/csseinfo/myfile/'+result.user.cn+result.user.alias+'/'+newfullfilename,
+	      						//downloadLink:encodeURI(userDir),
+	      						previewlink:'http://qiandao.szu.edu.cn:81/csseinfo/publicfile/'+result.user.cn+result.user.alias+'/'+newfullfilename,
+	      						cn : result.user.cn,
+	      						alias :result.user.alias,
+	      						filename : newfullfilename,
+	      						finalname : finalname2,
+	      						filetype : filetype,
+	      						filesize : filesize+' Byte',
+	      						filepath : userDir+'\\'+newfullfilename
+	      						//filepath : 'qiandao.szu.edu.cn:81/csseinfo/myfile/'+result.user.cn+result.user.alias+'/'+newfullfilename
+	      					})
+	      					save.save(function(err,doc){
+	      						if(err){
+	      							console.log('save info err--->',err)
+	      							return res.json({'code':-1})
+	      						}
+	      						//console.log('fields---->',fields)
+						    	console.log('files---->',files)
+						    	console.log('files---->',files.file[0].headers)
+						    	return res.json({'code':0,'doc':doc})
+	      					})
+	      				});//fs
+			    	})
+			    	//同步重命名文件名
+      				
 			    })
 	    }
 	})

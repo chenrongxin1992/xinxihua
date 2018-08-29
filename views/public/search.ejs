@@ -40,10 +40,10 @@
         <%docs.forEach(function(item,index,docs){%>
           <div class="res_item">
             <h3 class="res_h3">
-              <%if(type!=5){%>
-                <a class="res_h3_a" type="<%=type%>"><%=item.filename%></a>
+              <%if(type!=1){%>
+                <a class="res_h3_a" type="<%=type%>" id="<%=item.filename%>"><%=item.filename%></a>
               <%}else{%>
-                <a class="res_h3_a1" href="/csseinfo/publicfile/<%=user.cn%><%=user.alias%>/<%=item.filename%>" data-lightbox="<%=item.filename%>" title="<%=item.filename%>"><img src="/csseinfo/publicfile/<%=user.cn%><%=user.alias%>/<%=item.finalname%>"></a>
+                <a class="res_h3_a" type="<%=type%>" id="<%=item.sourcenochinese%>"><%=item.filename%></a>
               <%}%>
             </h3>
             <div class="res_content">
@@ -144,13 +144,20 @@ console.log('11111',tabindex)
       console.log('this-->',this)
       console.log('this-->',this.type)
       console.log('this-->',this.innerHTML)
+      console.log('this-->',this.id)
       let type = this.type,
-          filename = this.innerHTML
+          filename = this.id
 
-      if(type && (type==0 || type==1 || type==3 || type==4)){
+      if(type && (type==0 || type==3 || type==4)){
         console.log('office')
         let ahref = encodeURI("http://qiandao.szu.edu.cn:81/csseinfo/myfile/" + "<%=user.cn%><%=user.alias%>/" +filename),
             url = "https://docs.google.com/viewer?url="+ahref
+        window.open(url)
+      }
+      if(type && type==1){
+        console.log('ppt')
+        let ahref = encodeURI("http://qiandao.szu.edu.cn:81/csseinfo/myfile/" + "<%=user.alias%>/" +filename),
+            url = "http://view.officeapps.live.com/op/view.aspx?src="+ahref
         window.open(url)
       }
       if(type==2){
