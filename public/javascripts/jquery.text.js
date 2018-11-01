@@ -27,7 +27,7 @@
 		
 		//字符串正则表达式关键字转化
 		$.regTrim = function(s){
-			var imp = /[\^\.\\\|\(\)\*\+\-\$\[\]\?]/g;
+			var imp = /[\^\.\\\|\(\)\*\+\-\$\[\]\?]/ig;
 			var imp_c = {};
 			imp_c["^"] = "\\^";
 			imp_c["."] = "\\.";
@@ -64,20 +64,24 @@
 			}
 			var v_html = t.html();
 			//删除注释
-			v_html = v_html.replace(/<!--(?:.*)\-->/g,"");
+			v_html = v_html.replace(/<!--(?:.*)\-->/ig,"");
 			
 			//将HTML代码支离为HTML片段和文字片段，其中文字片段用于正则替换处理，而HTML片段置之不理
-			var tags = /[^<>]+|<(\/?)([A-Za-z]+)([^<>]*)>/g;
+			var tags = /[^<>]+|<(\/?)([A-Za-z]+)([^<>]*)>/ig;
 			var a = v_html.match(tags), test = 0;
 			$.each(a, function(i, c){
 				if(!/<(?:.|\s)*?>/.test(c)){//非标签
 					//开始执行替换
 					$.each(arr,function(index, con){
+						//console.log('con--->',con)
 						if(con === ""){return;}
-						var reg = new RegExp($.regTrim(con), "g");
+						var reg = new RegExp($.regTrim(con), "ig");
+						//console.log('reg--->',reg)
+						//var reg1 = new RegExp($.regTrim(con), "g");
 						if(reg.test(c)){
 							//正则替换
 							c = c.replace(reg,"♂"+con+"♀");
+							//console.log('c--->',c)
 							test = 1;
 						}
 					});
