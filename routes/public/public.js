@@ -23,6 +23,25 @@ client.on('connect',function(err){
 	}
 })
 
+var mysql  = require('mysql');  //调用MySQL模块
+
+//创建一个connection
+var connection = mysql.createConnection({     
+  host     : '127.0.0.1',       //主机
+  user     : 'root',               //MySQL认证用户名
+  password : 'A_Diffcult_Password_0704',        //MySQL认证用户密码
+  port: '3306',  
+  database:'cssedocs',                 //端口号
+}); 
+//创建一个connection
+connection.connect(function(err){
+    if(err){        
+          console.log('[query] - :'+err);
+        return;
+    }
+      console.log('[connection connect]  succeed!');
+});  
+
 let MyServer = "http://116.13.96.53:81",
 	//CASserver = "https://auth.szu.edu.cn/cas.aspx/",
 	CASserver = 'https://authserver.szu.edu.cn/authserver/',
@@ -143,7 +162,7 @@ router.get('/', function(req, res, next) {
 	//res.render('public/index', { title: 'Express' });
 });
 
-router.get('/searchtxt',function(req,res){
+router.get('/searchtxt_mongover',function(req,res){
 	let searchtxt = decodeURIComponent(req.query.searchtxt),
 		filetype = req.query.type,
 		type = 0,
@@ -263,7 +282,7 @@ router.get('/searchtxt',function(req,res){
 			console.log('async waterfall final error')
 			return res.json({'code':-1,'msg':err})
 		}
-		console.log('result--->',result)
+		console.log('result--->',result.docs)
 		return res.render('public/search',{'docs':result.docs,'type':result.type,'count':result.count,'curr':result.curr})
 	})
 	
@@ -291,6 +310,117 @@ router.get('/searchtxt',function(req,res){
 	// 		return res.render('public/search',{'docs':docs,'type':type})//0.word,1.ppt,2.pdf,3.execl,4.txt,5.img
 	// 	}
 	// })
+}).get('/searchtxt',function(req,res){
+	let searchtxt = decodeURIComponent(req.query.searchtxt),
+		filetype = req.query.type,
+		type = 0,
+		page = req.query.page,
+		limit = req.query.limit
+
+	page ? page : 1;//当前页
+	limit ? limit : 10;//每页数据
+	if(!page){
+		page = 1
+	}
+	if(!limit){
+		limit = 10
+	}
+	if(!filetype || filetype==0){
+		//filetype = ['doc','docx']
+		filetype = '\'doc\',\'docx\''
+	}else if(filetype==1){
+		//filetype = ['ppt','pptx']
+		type = 1
+		filetype = '\'ppt\',\'pptx\''
+	}else if(filetype==2){
+		//filetype = ['pdf']
+		filetype = '\'pdf\''
+		type = 2
+	}else if(filetype==3){
+		//filetype = ['xls','xlsx']
+		filetype = '\'xls\',\'xlsx\''
+		type = 3
+	}else if(filetype==4){
+		//filetype = ['txt']
+		filetype = '\'txt\''
+		type = 4
+	}else{
+		//filetype = ['jpg','png','jpeg','PNG','gif']
+		filetype = '\'JPEG\',\'png\',\'jpeg\',\'PNG\',\'GIF\',\'gif\',\'jpg\''
+		type = 5
+	}
+	console.log('type--->',type)
+	console.log('filetype--->',filetype)
+	console.log('searchtxt--->',searchtxt)
+
+	let key_arr = []
+	async.waterfall([
+		function(cb){
+			//SELECT * FROM minshianli WHERE MATCH (zw) AGAINST('1');
+			let countsql = 'select count(*) as \'count\' from docinfo where MATCH (filename) AGAINST(\''+searchtxt+'\') and filetype in ('+filetype+') and ispublic=1 and isdelete=0'
+			connection.query(countsql,function(err,result,fields){
+				if(err){
+					console.log('mysql select err',err)
+					cb(err)
+				}else{
+					console.log('counts =====',result[0].count)
+					
+					cb(null,result[0].count)
+				}
+			})
+		},
+		function(total,cb){
+			let numSkip = (page-1)*limit
+			limit = parseInt(limit)
+			console.log('check -- >',limit,page,numSkip)
+			let searchsql = 'select * from docinfo where MATCH (filename) AGAINST(\''+searchtxt+'\') and filetype in ('+filetype+') and ispublic=1 and isdelete=0 limit ?,?'  
+			connection.query(searchsql,[numSkip,limit],function(err,result){
+				if(err){
+					console.log('searchtxt router searchsql err',err)
+					cb(err)
+				}else{
+					cb(null,result,total)
+				}
+			})
+		},
+		function(result,total,cb){
+			let final_arr = []
+				result.forEach(function(item,index){
+					let tempdata = {}
+					console.log('item-->',item)
+					tempdata._id = item.id
+					tempdata.filename = item.filename
+					tempdata.finalname = item.finalname
+					tempdata.filetype = item.filetype
+					tempdata.filesize = item.filesize
+					// if(item.filetag){
+					// 	tempdata.filetag = item.filetag.join(', ')
+					// }else{
+					// 	tempdata.filetag = ''
+					// }
+					tempdata.cn = item.cn
+					tempdata.filetag = item.filetag
+					tempdata.downloadlink = item.downloadLink
+					tempdata.created_time = item.created_time
+					final_arr.push(tempdata)
+					delete tempdata
+				})
+				let res = {}
+					res.docs = final_arr,
+					res.type = type,
+					res.count = total
+					res.curr = page
+				cb(null,res)
+		}
+	],function(error,result){
+		if(error){
+			console.log('async waterfall final error')
+			return res.json({'code':-1,'msg':err})
+		}
+		console.log('result--->',result.docs)
+		//return false
+		return res.render('public/search',{'docs':result.docs,'type':result.type,'count':result.count,'curr':result.curr})
+	})
 })
 
 module.exports = router;
